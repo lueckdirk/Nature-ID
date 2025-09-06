@@ -213,8 +213,9 @@
             border: none;
             background: rgba(255, 255, 255, 0.9);
             color: #333;
-            margin: 0 10px;
+            margin: 5px 5px;
             font-size: 1em;
+            min-width: 140px;
         }
         
         .progress-bar {
@@ -263,6 +264,11 @@
                 padding: 12px 15px;
                 font-size: 1em;
             }
+            
+            .settings select {
+                min-width: 120px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
@@ -301,6 +307,41 @@
                     <option value="medium">Medium (Mixed)</option>
                     <option value="hard">Hard (Rare)</option>
                 </select>
+                <br><br>
+                <select id="regionSelect">
+                    <option value="global">Global Species</option>
+                    <optgroup label="US Regions">
+                        <option value="northeast">Northeast US</option>
+                        <option value="southeast">Southeast US</option>
+                        <option value="midwest">Midwest US</option>
+                        <option value="southwest">Southwest US</option>
+                        <option value="west">Western US</option>
+                        <option value="pacific">Pacific Northwest</option>
+                    </optgroup>
+                    <optgroup label="US States">
+                        <option value="california">California</option>
+                        <option value="texas">Texas</option>
+                        <option value="florida">Florida</option>
+                        <option value="new-york">New York</option>
+                        <option value="pennsylvania">Pennsylvania</option>
+                        <option value="illinois">Illinois</option>
+                        <option value="ohio">Ohio</option>
+                        <option value="michigan">Michigan</option>
+                        <option value="georgia">Georgia</option>
+                        <option value="north-carolina">North Carolina</option>
+                        <option value="virginia">Virginia</option>
+                        <option value="washington">Washington</option>
+                        <option value="arizona">Arizona</option>
+                        <option value="massachusetts">Massachusetts</option>
+                        <option value="colorado">Colorado</option>
+                    </optgroup>
+                    <optgroup label="Other Regions">
+                        <option value="canada">Canada</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="australia">Australia</option>
+                        <option value="europe">Europe</option>
+                    </optgroup>
+                </select>
             </div>
             
             <div id="gameContent">
@@ -317,34 +358,158 @@
                 this.total = 0;
                 this.currentQuestion = null;
                 this.gameContent = document.getElementById('gameContent');
-                this.speciesCache = new Map();
-                this.usedSpecies = new Set();
                 this.categorySelect = document.getElementById('categorySelect');
                 this.difficultySelect = document.getElementById('difficultySelect');
+                this.regionSelect = document.getElementById('regionSelect');
+                this.questionQueue = [];
+                this.isPreloading = false;
+                this.usedSpecies = new Set();
                 
                 this.init();
             }
             
             async init() {
                 this.bindEvents();
-                await this.loadNextQuestion();
+                await this.preloadQuestions();
+                this.loadNextQuestion();
             }
             
             bindEvents() {
                 this.categorySelect.addEventListener('change', () => {
                     this.usedSpecies.clear();
-                    this.loadNextQuestion();
+                    this.questionQueue = [];
+                    this.gameContent.innerHTML = '<div class="loading">Loading new questions...</div>';
+                    this.preloadQuestions().then(() => this.loadNextQuestion());
                 });
                 
                 this.difficultySelect.addEventListener('change', () => {
                     this.usedSpecies.clear();
-                    this.loadNextQuestion();
+                    this.questionQueue = [];
+                    this.gameContent.innerHTML = '<div class="loading">Loading new questions...</div>';
+                    this.preloadQuestions().then(() => this.loadNextQuestion());
                 });
+                
+                this.regionSelect.addEventListener('change', () => {
+                    this.usedSpecies.clear();
+                    this.questionQueue = [];
+                    this.gameContent.innerHTML = '<div class="loading">Loading regional species...</div>';
+                    this.preloadQuestions().then(() => this.loadNextQuestion());
+                });
+            }
+            
+            getRegionBounds(region) {
+                const regions = {
+                    'global': null,
+                    // US Regions
+                    'northeast': { swlat: 39.7, swlng: -80.5, nelat: 47.5, nelng: -66.9 },
+                    'southeast': { swlat: 24.4, swlng: -88.5, nelat: 39.7, nelng: -75.4 },
+                    'midwest': { swlat: 36.9, swlng: -104.0, nelat: 49.4, nelng: -80.5 },
+                    'southwest': { swlat: 25.8, swlng: -125.0, nelat: 42.0, nelng: -93.5 },
+                    'west': { swlat: 32.5, swlng: -125.0, nelat: 49.0, nelng: -104.0 },
+                    'pacific': { swlat: 42.0, swlng: -125.0, nelat: 49.0, nelng: -116.9 },
+                    // US States
+                    'california': { swlat: 32.5, swlng: -124.5, nelat: 42.0, nelng: -114.1 },
+                    'texas': { swlat: 25.8, swlng: -106.6, nelat: 36.5, nelng: -93.5 },
+                    'florida': { swlat: 24.4, swlng: -87.6, nelat: 31.0, nelng: -79.8 },
+                    'new-york': { swlat: 40.4, swlng: -79.8, nelat: 45.0, nelng: -71.8 },
+                    'pennsylvania': { swlat: 39.7, swlng: -80.5, nelat: 42.5, nelng: -74.7 },
+                    'illinois': { swlat: 36.9, swlng: -91.5, nelat: 42.5, nelng: -87.0 },
+                    'ohio': { swlat: 38.4, swlng: -84.8, nelat: 42.3, nelng: -80.5 },
+                    'michigan': { swlat: 41.6, swlng: -90.4, nelat: 48.3, nelng: -82.1 },
+                    'georgia': { swlat: 30.3, swlng: -85.6, nelat: 35.0, nelng: -80.8 },
+                    'north-carolina': { swlat: 33.8, swlng: -84.3, nelat: 36.6, nelng: -75.4 },
+                    'virginia': { swlat: 36.5, swlng: -83.7, nelat: 39.5, nelng: -75.2 },
+                    'washington': { swlat: 45.5, swlng: -124.8, nelat: 49.0, nelng: -116.9 },
+                    'arizona': { swlat: 31.3, swlng: -114.8, nelat: 37.0, nelng: -109.0 },
+                    'massachusetts': { swlat: 41.2, swlng: -73.5, nelat: 42.9, nelng: -69.9 },
+                    'colorado': { swlat: 36.9, swlng: -109.1, nelat: 41.0, nelng: -102.0 },
+                    // Other regions
+                    'canada': { swlat: 41.6, swlng: -141.0, nelat: 83.1, nelng: -52.6 },
+                    'uk': { swlat: 49.9, swlng: -10.7, nelat: 60.8, nelng: 1.8 },
+                    'australia': { swlat: -43.6, swlng: 113.3, nelat: -10.7, nelng: 153.6 },
+                    'europe': { swlat: 35.8, swlng: -10.7, nelat: 71.2, nelng: 40.2 }
+                };
+                
+                return regions[region] || null;
+            }
+            
+            async preloadQuestions() {
+                if (this.isPreloading) return;
+                this.isPreloading = true;
+                
+                try {
+                    // Preload 5 questions
+                    while (this.questionQueue.length < 5) {
+                        const observations = await this.fetchSpeciesData();
+                        if (observations && observations.length > 0) {
+                            const questions = await this.processObservationsIntoQuestions(observations);
+                            this.questionQueue.push(...questions);
+                        } else {
+                            // If no data, break to avoid infinite loop
+                            break;
+                        }
+                    }
+                    console.log(`Preloaded ${this.questionQueue.length} questions`);
+                } catch (error) {
+                    console.error('Error preloading questions:', error);
+                } finally {
+                    this.isPreloading = false;
+                }
+            }
+            
+            async processObservationsIntoQuestions(observations) {
+                const validObservations = observations.filter(obs => 
+                    obs.taxon && 
+                    obs.taxon.preferred_common_name && 
+                    obs.photos && 
+                    obs.photos.length > 0 &&
+                    !this.usedSpecies.has(obs.taxon.id)
+                );
+                
+                if (validObservations.length < 8) {
+                    // Reset used species if we're running out
+                    this.usedSpecies.clear();
+                }
+                
+                const questions = [];
+                const used = new Set();
+                
+                // Create multiple questions from this batch
+                const maxQuestions = Math.min(3, Math.floor(validObservations.length / 4));
+                for (let i = 0; i < maxQuestions; i++) {
+                    const availableObs = validObservations.filter(obs => 
+                        !used.has(obs.taxon.id) && !this.usedSpecies.has(obs.taxon.id)
+                    );
+                    
+                    if (availableObs.length < 4) break;
+                    
+                    const correctObservation = availableObs[Math.floor(Math.random() * availableObs.length)];
+                    used.add(correctObservation.taxon.id);
+                    this.usedSpecies.add(correctObservation.taxon.id);
+                    
+                    // Generate wrong answers
+                    const wrongObservations = availableObs
+                        .filter(obs => obs.taxon.id !== correctObservation.taxon.id)
+                        .sort(() => Math.random() - 0.5)
+                        .slice(0, 3);
+                    
+                    wrongObservations.forEach(obs => used.add(obs.taxon.id));
+                    
+                    questions.push({
+                        correct: correctObservation,
+                        options: this.shuffleArray([correctObservation, ...wrongObservations])
+                    });
+                }
+                
+                return questions;
             }
             
             async fetchSpeciesData() {
                 const category = this.categorySelect.value;
                 const difficulty = this.difficultySelect.value;
+                const region = this.regionSelect.value;
+                
+                console.log('Fetching data for region:', region);
                 
                 // Define search parameters based on selections
                 let iconicTaxa = [];
@@ -355,25 +520,38 @@
                 const qualityGrade = difficulty === 'hard' ? 'research' : 'needs_id,research';
                 const popular = difficulty === 'easy' ? 'true' : 'false';
                 
+                // Get regional bounds
+                const bounds = this.getRegionBounds(region);
+                console.log('Region bounds:', bounds);
+                
                 try {
-                    // Get random observations
-                    const randomPage = Math.floor(Math.random() * 100) + 1;
+                    const randomPage = Math.floor(Math.random() * 50) + 1;
                     const iconicTaxonParam = iconicTaxa.map(t => `iconic_taxa[]=${t}`).join('&');
                     
-                    const response = await fetch(
-                        `https://api.inaturalist.org/v1/observations?` +
+                    let boundsParam = '';
+                    if (bounds) {
+                        boundsParam = `&swlat=${bounds.swlat}&swlng=${bounds.swlng}&nelat=${bounds.nelat}&nelng=${bounds.nelng}`;
+                        console.log('Adding bounds parameter:', boundsParam);
+                    }
+                    
+                    const apiUrl = `https://api.inaturalist.org/v1/observations?` +
                         `${iconicTaxonParam}&` +
                         `quality_grade=${qualityGrade}&` +
                         `popular=${popular}&` +
                         `photos=true&` +
                         `per_page=30&` +
                         `page=${randomPage}&` +
-                        `order=random`
-                    );
+                        `order=random` +
+                        boundsParam;
+                    
+                    console.log('Final API URL:', apiUrl);
+                    
+                    const response = await fetch(apiUrl);
                     
                     if (!response.ok) throw new Error('API request failed');
                     
                     const data = await response.json();
+                    console.log('Received', data.results.length, 'observations for region:', region);
                     return data.results;
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -401,8 +579,8 @@
             
             async loadNextQuestion() {
                 // Check if we need to preload more questions
-                if (this.questionQueue.length < 2) {
-                    this.preloadQuestions(); // Don't await - let it run in background
+                if (this.questionQueue.length < 2 && !this.isPreloading) {
+                    this.preloadQuestions();
                 }
                 
                 // If we have a question ready, use it
@@ -422,6 +600,8 @@
                     this.currentQuestion = questions[0];
                     this.questionQueue.push(...questions.slice(1));
                     this.renderQuestion();
+                } else {
+                    this.gameContent.innerHTML = '<div class="loading">No species found for this region. Try a different area.</div>';
                 }
             }
             
