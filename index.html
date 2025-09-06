@@ -202,38 +202,6 @@
             font-weight: 500;
         }
         
-        .settings {
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .settings select {
-            padding: 8px 15px;
-            border-radius: 10px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            margin: 5px 5px;
-            font-size: 1em;
-            min-width: 140px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-        
         .species-info {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 15px;
@@ -276,6 +244,38 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             border-left: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .settings {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .settings select {
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            margin: 5px 5px;
+            font-size: 1em;
+            min-width: 140px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 4px;
+            transition: width 0.3s ease;
         }
         
         @media (max-width: 600px) {
@@ -337,9 +337,17 @@
         <div class="game-area">
             <div class="settings">
                 <select id="categorySelect">
-                    <option value="both">Plants & Animals</option>
-                    <option value="plants">Plants Only</option>
-                    <option value="animals">Animals Only</option>
+                    <option value="all">All Species</option>
+                    <option value="birds">🐦 Birds</option>
+                    <option value="plants">🌱 Plants</option>
+                    <option value="insects">🦋 Insects</option>
+                    <option value="mammals">🐾 Mammals</option>
+                    <option value="fish">🐠 Fish</option>
+                    <option value="reptiles">🦎 Reptiles</option>
+                    <option value="amphibians">🐸 Amphibians</option>
+                    <option value="arachnids">🕷️ Spiders</option>
+                    <option value="mollusks">🐌 Mollusks</option>
+                    <option value="fungi">🍄 Fungi</option>
                 </select>
                 <select id="difficultySelect">
                     <option value="easy">Easy (Common)</option>
@@ -417,7 +425,7 @@
                 this.categorySelect.addEventListener('change', () => {
                     this.usedSpecies.clear();
                     this.questionQueue = [];
-                    this.gameContent.innerHTML = '<div class="loading">Loading new questions...</div>';
+                    this.gameContent.innerHTML = '<div class="loading">Loading new species...</div>';
                     this.preloadQuestions().then(() => this.loadNextQuestion());
                 });
                 
@@ -470,6 +478,25 @@
                 };
                 
                 return regions[region] || null;
+            }
+            
+            getCategoryTaxonIds(category) {
+                // Using iNaturalist's taxon IDs for specific groups
+                const categories = {
+                    'all': null,
+                    'birds': [3], // Aves
+                    'plants': [47126], // Plantae
+                    'insects': [47158], // Insecta
+                    'mammals': [40151], // Mammalia
+                    'fish': [47178], // Actinopterygii (ray-finned fish)
+                    'reptiles': [26036], // Reptilia
+                    'amphibians': [20978], // Amphibia
+                    'arachnids': [47119], // Arachnida
+                    'mollusks': [47115], // Mollusca
+                    'fungi': [47170] // Fungi
+                };
+                
+                return categories[category];
             }
             
             async preloadQuestions() {
@@ -548,16 +575,13 @@
                 const difficulty = this.difficultySelect.value;
                 const region = this.regionSelect.value;
                 
-                console.log('Fetching data for region:', region);
-                
-                // Define search parameters based on selections
-                let iconicTaxa = [];
-                if (category === 'plants') iconicTaxa = ['Plantae'];
-                else if (category === 'animals') iconicTaxa = ['Animalia'];
-                else iconicTaxa = ['Plantae', 'Animalia'];
+                console.log('Fetching data for category:', category, 'region:', region);
                 
                 const qualityGrade = difficulty === 'hard' ? 'research' : 'needs_id,research';
                 const popular = difficulty === 'easy' ? 'true' : 'false';
+                
+                // Get category-specific taxon IDs
+                const taxonIds = this.getCategoryTaxonIds(category);
                 
                 // Get regional bounds
                 const bounds = this.getRegionBounds(region);
@@ -565,7 +589,12 @@
                 
                 try {
                     const randomPage = Math.floor(Math.random() * 50) + 1;
-                    const iconicTaxonParam = iconicTaxa.map(t => `iconic_taxa[]=${t}`).join('&');
+                    
+                    // Build taxon parameter
+                    let taxonParam = '';
+                    if (taxonIds && taxonIds.length > 0) {
+                        taxonParam = taxonIds.map(id => `taxon_id=${id}`).join('&') + '&';
+                    }
                     
                     let boundsParam = '';
                     if (bounds) {
@@ -574,7 +603,7 @@
                     }
                     
                     const apiUrl = `https://api.inaturalist.org/v1/observations?` +
-                        `${iconicTaxonParam}&` +
+                        `${taxonParam}` +
                         `quality_grade=${qualityGrade}&` +
                         `popular=${popular}&` +
                         `photos=true&` +
@@ -590,7 +619,7 @@
                     if (!response.ok) throw new Error('API request failed');
                     
                     const data = await response.json();
-                    console.log('Received', data.results.length, 'observations for region:', region);
+                    console.log('Received', data.results.length, 'observations for category:', category, 'region:', region);
                     return data.results;
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -640,7 +669,7 @@
                     this.questionQueue.push(...questions.slice(1));
                     this.renderQuestion();
                 } else {
-                    this.gameContent.innerHTML = '<div class="loading">No species found for this region. Try a different area.</div>';
+                    this.gameContent.innerHTML = '<div class="loading">No species found for this selection. Try different filters.</div>';
                 }
             }
             
@@ -664,6 +693,7 @@
                         `).join('')}
                     </div>
                     <div class="feedback" id="feedback"></div>
+                    <div class="species-info" id="speciesInfo" style="display:none;"></div>
                     <div class="controls">
                         <button class="btn" onclick="game.loadNextQuestion()" id="nextBtn" style="display:none;">
                             Next Question
@@ -697,7 +727,167 @@
                 
                 this.total += 1;
                 this.updateScore();
+                this.showSpeciesInfo();
                 document.getElementById('nextBtn').style.display = 'block';
+            }
+            
+            showSpeciesInfo() {
+                const species = this.currentQuestion.correct;
+                const infoDiv = document.getElementById('speciesInfo');
+                
+                if (infoDiv) {
+                    // Build species information
+                    let infoHTML = `
+                        <div class="species-info-header">
+                            <strong>${species.taxon.preferred_common_name}</strong>
+                            ${species.taxon.name !== species.taxon.preferred_common_name ? 
+                                `<br><em>${species.taxon.name}</em>` : ''}
+                        </div>
+                    `;
+                    
+                    // Add taxonomic information
+                    if (species.taxon.rank) {
+                        infoHTML += `<div class="taxonomy">Rank: ${species.taxon.rank}</div>`;
+                    }
+                    
+                    // Add basic info from the observation
+                    let facts = [];
+                    
+                    // Location info
+                    if (species.place_guess) {
+                        facts.push(`📍 Observed in: ${species.place_guess}`);
+                    }
+                    
+                    // Date info
+                    if (species.observed_on_details && species.observed_on_details.date) {
+                        const date = new Date(species.observed_on_details.date);
+                        const month = date.toLocaleString('default', { month: 'long' });
+                        facts.push(`📅 Often observed in: ${month}`);
+                    }
+                    
+                    // Conservation status
+                    if (species.taxon.conservation_status) {
+                        const status = species.taxon.conservation_status;
+                        const statusEmoji = this.getConservationEmoji(status.status);
+                        facts.push(`${statusEmoji} Conservation: ${status.status_name || status.status}`);
+                    }
+                    
+                    // Basic taxonomy facts
+                    if (species.taxon.iconic_taxon_name === 'Plantae') {
+                        facts.push(`🌱 This is a plant species`);
+                    } else if (species.taxon.iconic_taxon_name === 'Animalia') {
+                        facts.push(`🐾 This is an animal species`);
+                    }
+                    
+                    // Quality grade info
+                    if (species.quality_grade === 'research') {
+                        facts.push(`✅ This is a research-grade observation, verified by experts`);
+                    }
+                    
+                    // Add number of photos
+                    if (species.photos && species.photos.length > 1) {
+                        facts.push(`📸 This observation includes ${species.photos.length} photos`);
+                    }
+                    
+                    // Generate interesting facts based on common names
+                    const commonFacts = this.getCommonNameFacts(species.taxon.preferred_common_name);
+                    facts.push(...commonFacts);
+                    
+                    // Limit to 4 most interesting facts
+                    facts = facts.slice(0, 4);
+                    
+                    if (facts.length > 0) {
+                        infoHTML += `<div class="species-facts">${facts.map(fact => 
+                            `<div class="fact">${fact}</div>`
+                        ).join('')}</div>`;
+                    }
+                    
+                    infoDiv.innerHTML = infoHTML;
+                    infoDiv.style.display = 'block';
+                }
+            }
+            
+            getConservationEmoji(status) {
+                const statusMap = {
+                    'LC': '✅', 'NT': '⚠️', 'VU': '🟡', 'EN': '🟠', 
+                    'CR': '🔴', 'EW': '💀', 'EX': '💀'
+                };
+                return statusMap[status] || '📊';
+            }
+            
+            getCommonNameFacts(commonName) {
+                const name = commonName.toLowerCase();
+                const facts = [];
+                
+                // Bird facts
+                if (name.includes('cardinal')) facts.push('🐦 Cardinals mate for life and the male feeds the female during courtship');
+                if (name.includes('robin')) facts.push('🐦 Robins can live up to 13 years and are often the first to sing at dawn');
+                if (name.includes('hawk')) facts.push('🦅 Hawks have incredible eyesight, up to 8 times sharper than humans');
+                if (name.includes('owl')) facts.push('🦉 Owls can rotate their heads 270 degrees and fly silently');
+                if (name.includes('hummingbird')) facts.push('🐦 Hummingbirds beat their wings 50-80 times per second');
+                if (name.includes('eagle')) facts.push('🦅 Eagles can spot prey from over 2 miles away');
+                if (name.includes('woodpecker')) facts.push('🐦 Woodpeckers have shock-absorbing skulls and sticky tongues');
+                if (name.includes('crow') || name.includes('raven')) facts.push('🐦 Crows and ravens are among the most intelligent birds, using tools');
+                
+                // Mammal facts
+                if (name.includes('deer')) facts.push('🦌 Deer can jump up to 10 feet high and run 30 mph');
+                if (name.includes('squirrel')) facts.push('🐿️ Squirrels can find buried nuts months later using their incredible memory');
+                if (name.includes('rabbit')) facts.push('🐰 Rabbits can see nearly 360 degrees and sleep with their eyes open');
+                if (name.includes('fox')) facts.push('🦊 Foxes use Earth\'s magnetic field to hunt and can hear prey under snow');
+                if (name.includes('bear')) facts.push('🐻 Bears have an excellent sense of smell, 7 times better than a bloodhound');
+                if (name.includes('wolf')) facts.push('🐺 Wolves can travel up to 50 miles in a day and have 42 teeth');
+                if (name.includes('bat')) facts.push('🦇 Bats are the only mammals capable of true flight');
+                
+                // Tree facts
+                if (name.includes('oak')) facts.push('🌳 A single oak tree can support over 500 species of insects and animals');
+                if (name.includes('maple')) facts.push('🍁 Maple syrup requires 40 gallons of sap to make 1 gallon of syrup');
+                if (name.includes('pine')) facts.push('🌲 Pine trees can live for over 1,000 years and some grow to 200+ feet tall');
+                if (name.includes('willow')) facts.push('🌳 Willow bark contains aspirin-like compounds used for pain relief');
+                if (name.includes('redwood') || name.includes('sequoia')) facts.push('🌲 Redwoods are the tallest trees on Earth, reaching over 350 feet');
+                if (name.includes('cherry')) facts.push('🌸 Cherry blossoms only bloom for about 2 weeks each year');
+                
+                // Flower facts
+                if (name.includes('sunflower')) facts.push('🌻 Sunflowers track the sun across the sky when young, called heliotropism');
+                if (name.includes('rose')) facts.push('🌹 Roses have been cultivated for over 5,000 years and are related to apples');
+                if (name.includes('daisy')) facts.push('🌼 Daisies are actually composite flowers made of many tiny flowers');
+                if (name.includes('tulip')) facts.push('🌷 Tulips were once so valuable in Holland they caused an economic bubble');
+                if (name.includes('orchid')) facts.push('🌺 Orchids are one of the largest plant families with over 25,000 species');
+                
+                // Insect facts
+                if (name.includes('butterfly')) facts.push('🦋 Butterflies taste with their feet and smell with their antennae');
+                if (name.includes('monarch')) facts.push('🦋 Monarch butterflies migrate up to 3,000 miles, taking 4 generations');
+                if (name.includes('bee')) facts.push('🐝 Bees communicate through dance and a colony can contain up to 80,000 bees');
+                if (name.includes('ant')) facts.push('🐜 Ants can lift 10-50 times their own body weight');
+                if (name.includes('dragonfly')) facts.push('🜟 Dragonflies can see in nearly 360 degrees and catch 95% of their prey');
+                if (name.includes('firefly') || name.includes('lightning bug')) facts.push('✨ Fireflies produce light without heat through bioluminescence');
+                
+                // Fish facts
+                if (name.includes('salmon')) facts.push('🐟 Salmon can swim upstream and jump up waterfalls to spawn');
+                if (name.includes('shark')) facts.push('🦈 Sharks have been around for over 400 million years');
+                if (name.includes('trout')) facts.push('🐟 Trout can live up to 20 years and are indicators of clean water');
+                if (name.includes('bass')) facts.push('🐟 Bass are excellent parents, with males guarding their nests');
+                
+                // Reptile facts
+                if (name.includes('turtle')) facts.push('🐢 Some turtles can live over 100 years and navigate using magnetic fields');
+                if (name.includes('snake')) facts.push('🐍 Snakes can unhinge their jaws to swallow prey larger than their head');
+                if (name.includes('lizard')) facts.push('🦎 Many lizards can regrow their tails if they lose them to predators');
+                if (name.includes('gecko')) facts.push('🦎 Geckos can walk on walls and ceilings using millions of tiny hairs');
+                
+                // Amphibian facts
+                if (name.includes('frog')) facts.push('🐸 Frogs absorb water through their skin and some can freeze solid in winter');
+                if (name.includes('toad')) facts.push('🐸 Toads can live up to 40 years and some species give birth through their skin');
+                if (name.includes('salamander')) facts.push('🦎 Salamanders can regenerate lost limbs, tails, and even parts of organs');
+                
+                // Spider facts
+                if (name.includes('spider')) facts.push('🕷️ Spider silk is stronger than steel by weight and more elastic than rubber');
+                if (name.includes('tarantula')) facts.push('🕷️ Tarantulas can live up to 30 years and regrow lost legs');
+                if (name.includes('black widow')) facts.push('🕷️ Only female black widows are dangerous; males are much smaller');
+                
+                // Fungi facts
+                if (name.includes('mushroom')) facts.push('🍄 Mushrooms are more closely related to animals than plants');
+                if (name.includes('moss')) facts.push('🌿 Moss can survive in space and doesn\'t have roots, stems, or leaves');
+                
+                return facts.slice(0, 2); // Return max 2 facts per species
             }
             
             updateScore() {
