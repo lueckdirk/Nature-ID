@@ -165,18 +165,6 @@
             text-decoration: underline;
         }
         
-        .hint-box {
-            background: rgba(255, 193, 7, 0.2);
-            border: 2px solid rgba(255, 193, 7, 0.4);
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 0.95em;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-        
         .loading {
             text-align: center;
             font-size: 1.2em;
@@ -279,20 +267,20 @@
         .option-common-name {
             font-size: 1.1em;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
         
         .option-scientific-name {
             font-size: 0.9em;
             font-style: italic;
             opacity: 0.85;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
         
         .option-taxonomy {
             font-size: 0.8em;
             opacity: 0.75;
-            margin-top: 4px;
+            margin-top: 5px;
         }
         
         @keyframes correctPulse {
@@ -605,56 +593,15 @@
                         <option value="pacific">Pacific Northwest</option>
                     </optgroup>
                     <optgroup label="US States">
-                        <option value="AL">Alabama</option>
-                        <option value="AK">Alaska</option>
-                        <option value="AZ">Arizona</option>
-                        <option value="AR">Arkansas</option>
-                        <option value="CA">California</option>
-                        <option value="CO">Colorado</option>
-                        <option value="CT">Connecticut</option>
-                        <option value="DE">Delaware</option>
-                        <option value="FL">Florida</option>
-                        <option value="GA">Georgia</option>
-                        <option value="HI">Hawaii</option>
-                        <option value="ID">Idaho</option>
-                        <option value="IL">Illinois</option>
-                        <option value="IN">Indiana</option>
-                        <option value="IA">Iowa</option>
-                        <option value="KS">Kansas</option>
-                        <option value="KY">Kentucky</option>
-                        <option value="LA">Louisiana</option>
-                        <option value="ME">Maine</option>
-                        <option value="MD">Maryland</option>
-                        <option value="MA">Massachusetts</option>
-                        <option value="MI">Michigan</option>
-                        <option value="MN">Minnesota</option>
-                        <option value="MS">Mississippi</option>
-                        <option value="MO">Missouri</option>
-                        <option value="MT">Montana</option>
-                        <option value="NE">Nebraska</option>
-                        <option value="NV">Nevada</option>
-                        <option value="NH">New Hampshire</option>
-                        <option value="NJ">New Jersey</option>
-                        <option value="NM">New Mexico</option>
-                        <option value="NY">New York</option>
-                        <option value="NC">North Carolina</option>
-                        <option value="ND">North Dakota</option>
-                        <option value="OH">Ohio</option>
-                        <option value="OK">Oklahoma</option>
-                        <option value="OR">Oregon</option>
-                        <option value="PA">Pennsylvania</option>
-                        <option value="RI">Rhode Island</option>
-                        <option value="SC">South Carolina</option>
-                        <option value="SD">South Dakota</option>
-                        <option value="TN">Tennessee</option>
-                        <option value="TX">Texas</option>
-                        <option value="UT">Utah</option>
-                        <option value="VT">Vermont</option>
-                        <option value="VA">Virginia</option>
-                        <option value="WA">Washington</option>
-                        <option value="WV">West Virginia</option>
                         <option value="WI">Wisconsin</option>
-                        <option value="WY">Wyoming</option>
+                        <option value="CA">California</option>
+                        <option value="TX">Texas</option>
+                        <option value="FL">Florida</option>
+                        <option value="NY">New York</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="IL">Illinois</option>
+                        <option value="OH">Ohio</option>
+                        <option value="MI">Michigan</option>
                     </optgroup>
                     <optgroup label="Other Regions">
                         <option value="canada">Canada</option>
@@ -697,7 +644,7 @@
         
         <div class="game-area">
             <div class="info-box">
-                🦎 Species data from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> - A community of nature enthusiasts
+                🦎 Species data from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a>
             </div>
             <div id="gameContent">
                 <div class="loading">Loading nature data...</div>
@@ -734,7 +681,6 @@
                 this.questionQueue = [];
                 this.usedSpecies = new Set();
                 this.currentZoom = 1;
-                this.isDragging = false;
                 this.speciesEncountered = new Set();
                 this.speciesCorrect = new Set();
                 this.init();
@@ -772,56 +718,15 @@
             
             getStateBounds(state) {
                 const states = {
-                    'AL': {swlat: 30.2, swlng: -88.5, nelat: 35.0, nelng: -84.9},
-                    'AK': {swlat: 51.2, swlng: -179.1, nelat: 71.4, nelng: -129.9},
-                    'AZ': {swlat: 31.3, swlng: -114.8, nelat: 37.0, nelng: -109.0},
-                    'AR': {swlat: 33.0, swlng: -94.6, nelat: 36.5, nelng: -89.6},
-                    'CA': {swlat: 32.5, swlng: -124.5, nelat: 42.0, nelng: -114.1},
-                    'CO': {swlat: 36.9, swlng: -109.1, nelat: 41.0, nelng: -102.0},
-                    'CT': {swlat: 40.9, swlng: -73.7, nelat: 42.1, nelng: -71.8},
-                    'DE': {swlat: 38.4, swlng: -75.8, nelat: 39.8, nelng: -75.0},
-                    'FL': {swlat: 24.4, swlng: -87.6, nelat: 31.0, nelng: -79.8},
-                    'GA': {swlat: 30.3, swlng: -85.6, nelat: 35.0, nelng: -80.8},
-                    'HI': {swlat: 18.9, swlng: -160.2, nelat: 22.2, nelng: -154.8},
-                    'ID': {swlat: 41.9, swlng: -117.2, nelat: 49.0, nelng: -111.0},
-                    'IL': {swlat: 36.9, swlng: -91.5, nelat: 42.5, nelng: -87.0},
-                    'IN': {swlat: 37.7, swlng: -88.1, nelat: 41.8, nelng: -84.8},
-                    'IA': {swlat: 40.4, swlng: -96.6, nelat: 43.5, nelng: -90.1},
-                    'KS': {swlat: 36.9, swlng: -102.1, nelat: 40.0, nelng: -94.6},
-                    'KY': {swlat: 36.5, swlng: -89.6, nelat: 39.1, nelng: -81.9},
-                    'LA': {swlat: 28.9, swlng: -94.0, nelat: 33.0, nelng: -88.8},
-                    'ME': {swlat: 42.9, swlng: -71.1, nelat: 47.5, nelng: -66.9},
-                    'MD': {swlat: 37.9, swlng: -79.5, nelat: 39.7, nelng: -75.0},
-                    'MA': {swlat: 41.2, swlng: -73.5, nelat: 42.9, nelng: -69.9},
-                    'MI': {swlat: 41.6, swlng: -90.4, nelat: 48.3, nelng: -82.1},
-                    'MN': {swlat: 43.5, swlng: -97.2, nelat: 49.4, nelng: -89.5},
-                    'MS': {swlat: 30.2, swlng: -91.7, nelat: 35.0, nelng: -88.1},
-                    'MO': {swlat: 35.9, swlng: -95.8, nelat: 40.6, nelng: -89.1},
-                    'MT': {swlat: 44.3, swlng: -116.1, nelat: 49.0, nelng: -104.0},
-                    'NE': {swlat: 40.0, swlng: -104.1, nelat: 43.0, nelng: -95.3},
-                    'NV': {swlat: 35.0, swlng: -120.0, nelat: 42.0, nelng: -114.0},
-                    'NH': {swlat: 42.7, swlng: -72.6, nelat: 45.3, nelng: -70.6},
-                    'NJ': {swlat: 38.9, swlng: -75.6, nelat: 41.4, nelng: -73.9},
-                    'NM': {swlat: 31.3, swlng: -109.1, nelat: 37.0, nelng: -103.0},
-                    'NY': {swlat: 40.4, swlng: -79.8, nelat: 45.0, nelng: -71.8},
-                    'NC': {swlat: 33.8, swlng: -84.3, nelat: 36.6, nelng: -75.4},
-                    'ND': {swlat: 45.9, swlng: -104.1, nelat: 49.0, nelng: -96.6},
-                    'OH': {swlat: 38.4, swlng: -84.8, nelat: 42.3, nelng: -80.5},
-                    'OK': {swlat: 33.6, swlng: -103.0, nelat: 37.0, nelng: -94.4},
-                    'OR': {swlat: 41.9, swlng: -124.6, nelat: 46.3, nelng: -116.5},
-                    'PA': {swlat: 39.7, swlng: -80.5, nelat: 42.5, nelng: -74.7},
-                    'RI': {swlat: 41.1, swlng: -71.9, nelat: 42.0, nelng: -71.1},
-                    'SC': {swlat: 32.0, swlng: -83.4, nelat: 35.2, nelng: -78.5},
-                    'SD': {swlat: 42.5, swlng: -104.1, nelat: 45.9, nelng: -96.4},
-                    'TN': {swlat: 34.9, swlng: -90.3, nelat: 36.7, nelng: -81.6},
-                    'TX': {swlat: 25.8, swlng: -106.6, nelat: 36.5, nelng: -93.5},
-                    'UT': {swlat: 36.9, swlng: -114.1, nelat: 42.0, nelng: -109.0},
-                    'VT': {swlat: 42.7, swlng: -73.4, nelat: 45.0, nelng: -71.5},
-                    'VA': {swlat: 36.5, swlng: -83.7, nelat: 39.5, nelng: -75.2},
-                    'WA': {swlat: 45.5, swlng: -124.8, nelat: 49.0, nelng: -116.9},
-                    'WV': {swlat: 37.2, swlng: -82.6, nelat: 40.6, nelng: -77.7},
                     'WI': {swlat: 42.5, swlng: -92.9, nelat: 47.3, nelng: -86.2},
-                    'WY': {swlat: 41.0, swlng: -111.1, nelat: 45.0, nelng: -104.0}
+                    'CA': {swlat: 32.5, swlng: -124.5, nelat: 42.0, nelng: -114.1},
+                    'TX': {swlat: 25.8, swlng: -106.6, nelat: 36.5, nelng: -93.5},
+                    'FL': {swlat: 24.4, swlng: -87.6, nelat: 31.0, nelng: -79.8},
+                    'NY': {swlat: 40.4, swlng: -79.8, nelat: 45.0, nelng: -71.8},
+                    'PA': {swlat: 39.7, swlng: -80.5, nelat: 42.5, nelng: -74.7},
+                    'IL': {swlat: 36.9, swlng: -91.5, nelat: 42.5, nelng: -87.0},
+                    'OH': {swlat: 38.4, swlng: -84.8, nelat: 42.3, nelng: -80.5},
+                    'MI': {swlat: 41.6, swlng: -90.4, nelat: 48.3, nelng: -82.1}
                 };
                 return states[state] || null;
             }
@@ -863,7 +768,7 @@
                 const region = this.regionSelect.value;
                 const bounds = this.getStateBounds(region) || this.getRegionBounds(region);
                 
-                let url = `https://api.inaturalist.org/v1/observations?quality_grade=${qualityGrade}&popular=${popular}&photos=true&per_page=50&page=${page}&order=random&details=all`;
+                let url = `https://api.inaturalist.org/v1/observations?quality_grade=${qualityGrade}&popular=${popular}&photos=true&per_page=50&page=${page}&order=random`;
                 
                 if (taxonIds) {
                     url += '&' + taxonIds.map(id => `taxon_id=${id}`).join('&');
@@ -994,25 +899,27 @@
                     <div class="question">What species is this?</div>
                     <div class="options">
                         ${options.map((option, index) => {
-                            let taxonomyText = '';
+                            let taxonomyInfo = '';
                             if (showTaxonomy) {
                                 const parts = [];
                                 if (option.taxon.genus) parts.push(`Genus: ${option.taxon.genus}`);
                                 if (option.taxon.family) parts.push(`Family: ${option.taxon.family}`);
-                                taxonomyText = parts.length > 0 ? `<div class="option-taxonomy">${parts.join(' • ')}</div>` : '';
+                                if (parts.length > 0) {
+                                    taxonomyInfo = `<div class="option-taxonomy">${parts.join(' • ')}</div>`;
+                                }
                             }
                             
                             return `
-                            <div class="option" onclick="game.selectAnswer(${index})">
-                                <div class="option-common-name">
-                                    ${useScientific ? option.taxon.name : option.taxon.preferred_common_name}
+                                <div class="option" onclick="game.selectAnswer(${index})">
+                                    <div class="option-common-name">
+                                        ${useScientific ? `<em>${option.taxon.name}</em>` : option.taxon.preferred_common_name}
+                                    </div>
+                                    ${!useScientific && option.taxon.name !== option.taxon.preferred_common_name ? 
+                                        `<div class="option-scientific-name">${option.taxon.name}</div>` : ''}
+                                    ${taxonomyInfo}
                                 </div>
-                                <div class="option-scientific-name">
-                                    ${useScientific ? option.taxon.preferred_common_name : (option.taxon.name !== option.taxon.preferred_common_name ? option.taxon.name : '')}
-                                </div>
-                                ${taxonomyText}
-                            </div>
-                        `}).join('')}
+                            `;
+                        }).join('')}
                     </div>
                     <div class="feedback" id="feedback"></div>
                     <div class="species-info" id="speciesInfo" style="display:none;"></div>
@@ -1028,7 +935,9 @@
                     option => option.taxon.id === this.currentQuestion.correct.taxon.id
                 );
                 
-                options.forEach(option => option.classList.add('disabled'));
+                options.forEach(option => {
+                    option.classList.add('disabled');
+                });
                 
                 if (selectedIndex === correctIndex) {
                     options[selectedIndex].classList.add('correct');
@@ -1049,6 +958,7 @@
                 
                 this.total += 1;
                 this.updateScore();
+                this.showSpeciesInfo();
                 document.getElementById('skipBtn').style.display = 'none';
                 document.getElementById('nextBtn').style.display = 'block';
             }
@@ -1059,7 +969,10 @@
                     option => option.taxon.id === this.currentQuestion.correct.taxon.id
                 );
                 
-                options.forEach(option => option.classList.add('disabled'));
+                options.forEach(option => {
+                    option.classList.add('disabled');
+                });
+                
                 options[correctIndex].classList.add('correct');
                 this.total += 1;
                 this.streak = 0;
@@ -1069,8 +982,55 @@
                 document.getElementById('feedback').style.color = '#ffc107';
                 
                 this.updateScore();
+                this.showSpeciesInfo();
                 document.getElementById('skipBtn').style.display = 'none';
                 document.getElementById('nextBtn').style.display = 'block';
+            }
+            
+            showSpeciesInfo() {
+                const species = this.currentQuestion.correct;
+                const infoDiv = document.getElementById('speciesInfo');
+                
+                if (infoDiv && species.taxon) {
+                    let infoHTML = `
+                        <div class="species-info-header">
+                            <strong>${species.taxon.preferred_common_name}</strong>
+                            ${species.taxon.name !== species.taxon.preferred_common_name ? 
+                                `<br><em>${species.taxon.name}</em>` : ''}
+                        </div>
+                    `;
+                    
+                    let facts = [];
+                    
+                    if (species.taxon.rank) {
+                        facts.push(`📊 Taxonomic Rank: ${species.taxon.rank}`);
+                    }
+                    
+                    if (species.taxon.genus) {
+                        facts.push(`🧬 Genus: ${species.taxon.genus}`);
+                    }
+                    
+                    if (species.taxon.family) {
+                        facts.push(`👨‍👩‍👧‍👦 Family: ${species.taxon.family}`);
+                    }
+                    
+                    if (species.place_guess) {
+                        facts.push(`📍 Observed in: ${species.place_guess}`);
+                    }
+                    
+                    if (species.quality_grade === 'research') {
+                        facts.push(`✅ Research-grade observation (expert verified)`);
+                    }
+                    
+                    if (facts.length > 0) {
+                        infoHTML += `<div class="species-facts">${facts.map(fact => 
+                            `<div class="fact">${fact}</div>`
+                        ).join('')}</div>`;
+                    }
+                    
+                    infoDiv.innerHTML = infoHTML;
+                    infoDiv.style.display = 'block';
+                }
             }
             
             updateScore() {
