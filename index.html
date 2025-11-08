@@ -36,51 +36,24 @@
             border-radius: 20px;
             backdrop-filter: blur(10px);
             width: 100%;
-            max-width: 700px;
+            max-width: 400px;
         }
         
         h1 {
             font-size: 2.5em;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             background: linear-gradient(45deg, #fff, #e0e6ff);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
-        .menu-bar {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        
-        .menu-bar select {
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            font-size: 0.95em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .menu-bar select:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
         .score-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            display: flex;
+            justify-content: space-between;
             width: 100%;
-            max-width: 350px;
-            margin: 20px auto;
+            max-width: 300px;
+            margin: 20px 0;
         }
         
         .score-item {
@@ -91,48 +64,6 @@
             backdrop-filter: blur(10px);
         }
         
-        .score-item-label {
-            font-size: 0.85em;
-            opacity: 0.9;
-            margin-bottom: 3px;
-        }
-        
-        .score-item-value {
-            font-size: 1.4em;
-            font-weight: 700;
-        }
-        
-        .diversity-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .diversity-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-        
-        .diversity-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px 10px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 0.9em;
-        }
-        
-        .diversity-item-label {
-            font-size: 0.8em;
-            opacity: 0.85;
-        }
-        
-        .diversity-item-value {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-top: 2px;
-        }
-        
         .game-area {
             width: 100%;
             max-width: 500px;
@@ -141,28 +72,6 @@
             padding: 30px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-        
-        .info-box {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 0.9em;
-            backdrop-filter: blur(10px);
-        }
-        
-        .info-box a {
-            color: #e0e6ff;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-        
-        .info-box a:hover {
-            color: #fff;
-            text-decoration: underline;
         }
         
         .loading {
@@ -176,10 +85,9 @@
             height: 300px;
             border-radius: 20px;
             overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             position: relative;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
         }
         
         .species-image {
@@ -191,29 +99,6 @@
         
         .species-image:hover {
             transform: scale(1.05);
-        }
-        
-        .zoom-icon {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 8px;
-            border-radius: 50%;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .next-button-container {
-            text-align: center;
-            margin-bottom: 20px;
-            min-height: 50px;
         }
         
         .question {
@@ -264,17 +149,6 @@
             opacity: 0.7;
         }
         
-        .option .common-name {
-            display: none;
-            font-size: 0.9em;
-            margin-top: 5px;
-            opacity: 0.9;
-        }
-        
-        .option.revealed .common-name {
-            display: block;
-        }
-        
         @keyframes correctPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -315,9 +189,9 @@
             transform: translateY(0);
         }
         
-        .btn.skip {
-            background: rgba(255, 193, 7, 0.8);
-            color: #333;
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
         }
         
         .feedback {
@@ -351,6 +225,13 @@
             font-weight: 400;
         }
         
+        .taxonomy {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
         .species-facts {
             display: grid;
             gap: 8px;
@@ -365,12 +246,28 @@
             border-left: 3px solid rgba(255, 255, 255, 0.3);
         }
         
+        .settings {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .settings select {
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            margin: 5px 5px;
+            font-size: 1em;
+            min-width: 140px;
+        }
+        
         .progress-bar {
             width: 100%;
             height: 8px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
-            margin: 15px 0 0 0;
+            margin: 15px 0;
             overflow: hidden;
         }
         
@@ -379,115 +276,6 @@
             background: linear-gradient(90deg, #4CAF50, #8BC34A);
             border-radius: 4px;
             transition: width 0.3s ease;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-        
-        .modal-content {
-            position: relative;
-            max-width: 95vw;
-            max-height: 95vh;
-            background: rgba(0, 0, 0, 0.9);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .modal-image-container {
-            width: 100%;
-            height: 80vh;
-            overflow: auto;
-            position: relative;
-            cursor: grab;
-        }
-        
-        .modal-image-container:active {
-            cursor: grabbing;
-        }
-        
-        .modal-image {
-            display: block;
-            max-width: none;
-            height: auto;
-            min-width: 100%;
-            min-height: 100%;
-            object-fit: contain;
-            transition: transform 0.2s ease;
-            transform-origin: center center;
-        }
-        
-        .zoom-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 1001;
-        }
-        
-        .zoom-btn {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            backdrop-filter: blur(5px);
-            transition: background 0.3s ease;
-        }
-        
-        .zoom-btn:hover {
-            background: rgba(0, 0, 0, 0.9);
-        }
-        
-        .zoom-info {
-            position: absolute;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.5em;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-            z-index: 1002;
         }
         
         @media (max-width: 600px) {
@@ -516,26 +304,9 @@
                 font-size: 1em;
             }
             
-            .menu-bar {
-                flex-direction: column;
-            }
-            
-            .menu-bar select {
-                width: 100%;
+            .settings select {
+                min-width: 120px;
                 font-size: 0.9em;
-            }
-            
-            .controls {
-                gap: 10px;
-            }
-            
-            .btn {
-                padding: 10px 20px;
-                font-size: 0.9em;
-            }
-            
-            .modal-image-container {
-                height: 70vh;
             }
         }
     </style>
@@ -544,7 +315,27 @@
     <div class="container">
         <div class="header">
             <h1>🌿 Nature ID Game 🦋</h1>
-            <div class="menu-bar">
+            <div class="score-board">
+                <div class="score-item">
+                    <div>Score</div>
+                    <div id="score">0</div>
+                </div>
+                <div class="score-item">
+                    <div>Streak</div>
+                    <div id="streak">0</div>
+                </div>
+                <div class="score-item">
+                    <div>Total</div>
+                    <div id="total">0</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="settings">
                 <select id="categorySelect">
                     <option value="all">All Species</option>
                     <option value="birds">🐦 Birds</option>
@@ -559,12 +350,13 @@
                     <option value="fungi">🍄 Fungi</option>
                 </select>
                 <select id="difficultySelect">
-                    <option value="easy">Easy (Any Species)</option>
-                    <option value="medium">Medium (Same Family)</option>
-                    <option value="hard">Hard (Scientific Names)</option>
+                    <option value="easy">Easy (Common)</option>
+                    <option value="medium">Medium (Mixed)</option>
+                    <option value="hard">Hard (Rare)</option>
                 </select>
+                <br><br>
                 <select id="regionSelect">
-                    <option value="global">Global</option>
+                    <option value="global">Global Species</option>
                     <optgroup label="US Regions">
                         <option value="northeast">Northeast US</option>
                         <option value="southeast">Southeast US</option>
@@ -574,56 +366,21 @@
                         <option value="pacific">Pacific Northwest</option>
                     </optgroup>
                     <optgroup label="US States">
-                        <option value="AL">Alabama</option>
-                        <option value="AK">Alaska</option>
-                        <option value="AZ">Arizona</option>
-                        <option value="AR">Arkansas</option>
-                        <option value="CA">California</option>
-                        <option value="CO">Colorado</option>
-                        <option value="CT">Connecticut</option>
-                        <option value="DE">Delaware</option>
-                        <option value="FL">Florida</option>
-                        <option value="GA">Georgia</option>
-                        <option value="HI">Hawaii</option>
-                        <option value="ID">Idaho</option>
-                        <option value="IL">Illinois</option>
-                        <option value="IN">Indiana</option>
-                        <option value="IA">Iowa</option>
-                        <option value="KS">Kansas</option>
-                        <option value="KY">Kentucky</option>
-                        <option value="LA">Louisiana</option>
-                        <option value="ME">Maine</option>
-                        <option value="MD">Maryland</option>
-                        <option value="MA">Massachusetts</option>
-                        <option value="MI">Michigan</option>
-                        <option value="MN">Minnesota</option>
-                        <option value="MS">Mississippi</option>
-                        <option value="MO">Missouri</option>
-                        <option value="MT">Montana</option>
-                        <option value="NE">Nebraska</option>
-                        <option value="NV">Nevada</option>
-                        <option value="NH">New Hampshire</option>
-                        <option value="NJ">New Jersey</option>
-                        <option value="NM">New Mexico</option>
-                        <option value="NY">New York</option>
-                        <option value="NC">North Carolina</option>
-                        <option value="ND">North Dakota</option>
-                        <option value="OH">Ohio</option>
-                        <option value="OK">Oklahoma</option>
-                        <option value="OR">Oregon</option>
-                        <option value="PA">Pennsylvania</option>
-                        <option value="RI">Rhode Island</option>
-                        <option value="SC">South Carolina</option>
-                        <option value="SD">South Dakota</option>
-                        <option value="TN">Tennessee</option>
-                        <option value="TX">Texas</option>
-                        <option value="UT">Utah</option>
-                        <option value="VT">Vermont</option>
-                        <option value="VA">Virginia</option>
-                        <option value="WA">Washington</option>
-                        <option value="WV">West Virginia</option>
-                        <option value="WI">Wisconsin</option>
-                        <option value="WY">Wyoming</option>
+                        <option value="california">California</option>
+                        <option value="texas">Texas</option>
+                        <option value="florida">Florida</option>
+                        <option value="new-york">New York</option>
+                        <option value="pennsylvania">Pennsylvania</option>
+                        <option value="illinois">Illinois</option>
+                        <option value="ohio">Ohio</option>
+                        <option value="michigan">Michigan</option>
+                        <option value="georgia">Georgia</option>
+                        <option value="north-carolina">North Carolina</option>
+                        <option value="virginia">Virginia</option>
+                        <option value="washington">Washington</option>
+                        <option value="arizona">Arizona</option>
+                        <option value="massachusetts">Massachusetts</option>
+                        <option value="colorado">Colorado</option>
                     </optgroup>
                     <optgroup label="Other Regions">
                         <option value="canada">Canada</option>
@@ -633,58 +390,9 @@
                     </optgroup>
                 </select>
             </div>
-            <div class="score-board">
-                <div class="score-item">
-                    <div class="score-item-label">Score</div>
-                    <div class="score-item-value" id="score">0</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-item-label">Streak</div>
-                    <div class="score-item-value" id="streak">0</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-item-label">Total</div>
-                    <div class="score-item-value" id="total">0</div>
-                </div>
-            </div>
-            <div class="diversity-section">
-                <div class="diversity-grid">
-                    <div class="diversity-item">
-                        <div class="diversity-item-label">🌍 Species Seen</div>
-                        <div class="diversity-item-value" id="speciesSeen">0</div>
-                    </div>
-                    <div class="diversity-item">
-                        <div class="diversity-item-label">✅ Species Learned</div>
-                        <div class="diversity-item-value" id="speciesLearned">0</div>
-                    </div>
-                </div>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
-        
-        <div class="game-area">
-            <div class="info-box">
-                🦎 Species data from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> - A community of nature enthusiasts
-            </div>
+            
             <div id="gameContent">
                 <div class="loading">Loading nature data...</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="imageModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="game.closeModal()">&times;</button>
-            <div class="zoom-info">Scroll to zoom, drag to pan</div>
-            <div class="modal-image-container" id="modalImageContainer">
-                <img id="modalImage" class="modal-image" alt="Enlarged species image">
-            </div>
-            <div class="zoom-controls">
-                <button class="zoom-btn" onclick="game.zoomOut()">-</button>
-                <button class="zoom-btn" onclick="game.resetZoom()">⌂</button>
-                <button class="zoom-btn" onclick="game.zoomIn()">+</button>
             </div>
         </div>
     </div>
@@ -701,159 +409,122 @@
                 this.difficultySelect = document.getElementById('difficultySelect');
                 this.regionSelect = document.getElementById('regionSelect');
                 this.questionQueue = [];
+                this.isPreloading = false;
                 this.usedSpecies = new Set();
-                this.currentZoom = 1;
-                this.isDragging = false;
-                this.speciesEncountered = new Set();
-                this.speciesCorrect = new Set();
+                
                 this.init();
             }
             
             async init() {
-                ['categorySelect', 'difficultySelect', 'regionSelect'].forEach(id => {
-                    document.getElementById(id).addEventListener('change', () => {
-                        this.usedSpecies.clear();
-                        this.questionQueue = [];
-                        this.gameContent.innerHTML = '<div class="loading">Loading...</div>';
-                        this.preloadQuestions().then(() => this.loadNextQuestion());
-                    });
-                });
+                this.bindEvents();
                 await this.preloadQuestions();
                 this.loadNextQuestion();
             }
             
-            getCategoryTaxonIds(category) {
-                const categories = {
-                    'all': null,
-                    'birds': [3],
-                    'plants': [47126],
-                    'insects': [47158],
-                    'mammals': [40151],
-                    'fish': [47178],
-                    'reptiles': [26036],
-                    'amphibians': [20978],
-                    'arachnids': [47119],
-                    'mollusks': [47115],
-                    'fungi': [47170]
-                };
-                return categories[category];
-            }
-            
-            getStateBounds(state) {
-                const states = {
-                    'AL': {swlat: 30.2, swlng: -88.5, nelat: 35.0, nelng: -84.9},
-                    'AK': {swlat: 51.2, swlng: -179.1, nelat: 71.4, nelng: -129.9},
-                    'AZ': {swlat: 31.3, swlng: -114.8, nelat: 37.0, nelng: -109.0},
-                    'AR': {swlat: 33.0, swlng: -94.6, nelat: 36.5, nelng: -89.6},
-                    'CA': {swlat: 32.5, swlng: -124.5, nelat: 42.0, nelng: -114.1},
-                    'CO': {swlat: 36.9, swlng: -109.1, nelat: 41.0, nelng: -102.0},
-                    'CT': {swlat: 40.9, swlng: -73.7, nelat: 42.1, nelng: -71.8},
-                    'DE': {swlat: 38.4, swlng: -75.8, nelat: 39.8, nelng: -75.0},
-                    'FL': {swlat: 24.4, swlng: -87.6, nelat: 31.0, nelng: -79.8},
-                    'GA': {swlat: 30.3, swlng: -85.6, nelat: 35.0, nelng: -80.8},
-                    'HI': {swlat: 18.9, swlng: -160.2, nelat: 22.2, nelng: -154.8},
-                    'ID': {swlat: 41.9, swlng: -117.2, nelat: 49.0, nelng: -111.0},
-                    'IL': {swlat: 36.9, swlng: -91.5, nelat: 42.5, nelng: -87.0},
-                    'IN': {swlat: 37.7, swlng: -88.1, nelat: 41.8, nelng: -84.8},
-                    'IA': {swlat: 40.4, swlng: -96.6, nelat: 43.5, nelng: -90.1},
-                    'KS': {swlat: 36.9, swlng: -102.1, nelat: 40.0, nelng: -94.6},
-                    'KY': {swlat: 36.5, swlng: -89.6, nelat: 39.1, nelng: -81.9},
-                    'LA': {swlat: 28.9, swlng: -94.0, nelat: 33.0, nelng: -88.8},
-                    'ME': {swlat: 42.9, swlng: -71.1, nelat: 47.5, nelng: -66.9},
-                    'MD': {swlat: 37.9, swlng: -79.5, nelat: 39.7, nelng: -75.0},
-                    'MA': {swlat: 41.2, swlng: -73.5, nelat: 42.9, nelng: -69.9},
-                    'MI': {swlat: 41.6, swlng: -90.4, nelat: 48.3, nelng: -82.1},
-                    'MN': {swlat: 43.5, swlng: -97.2, nelat: 49.4, nelng: -89.5},
-                    'MS': {swlat: 30.2, swlng: -91.7, nelat: 35.0, nelng: -88.1},
-                    'MO': {swlat: 35.9, swlng: -95.8, nelat: 40.6, nelng: -89.1},
-                    'MT': {swlat: 44.3, swlng: -116.1, nelat: 49.0, nelng: -104.0},
-                    'NE': {swlat: 40.0, swlng: -104.1, nelat: 43.0, nelng: -95.3},
-                    'NV': {swlat: 35.0, swlng: -120.0, nelat: 42.0, nelng: -114.0},
-                    'NH': {swlat: 42.7, swlng: -72.6, nelat: 45.3, nelng: -70.6},
-                    'NJ': {swlat: 38.9, swlng: -75.6, nelat: 41.4, nelng: -73.9},
-                    'NM': {swlat: 31.3, swlng: -109.1, nelat: 37.0, nelng: -103.0},
-                    'NY': {swlat: 40.4, swlng: -79.8, nelat: 45.0, nelng: -71.8},
-                    'NC': {swlat: 33.8, swlng: -84.3, nelat: 36.6, nelng: -75.4},
-                    'ND': {swlat: 45.9, swlng: -104.1, nelat: 49.0, nelng: -96.6},
-                    'OH': {swlat: 38.4, swlng: -84.8, nelat: 42.3, nelng: -80.5},
-                    'OK': {swlat: 33.6, swlng: -103.0, nelat: 37.0, nelng: -94.4},
-                    'OR': {swlat: 41.9, swlng: -124.6, nelat: 46.3, nelng: -116.5},
-                    'PA': {swlat: 39.7, swlng: -80.5, nelat: 42.5, nelng: -74.7},
-                    'RI': {swlat: 41.1, swlng: -71.9, nelat: 42.0, nelng: -71.1},
-                    'SC': {swlat: 32.0, swlng: -83.4, nelat: 35.2, nelng: -78.5},
-                    'SD': {swlat: 42.5, swlng: -104.1, nelat: 45.9, nelng: -96.4},
-                    'TN': {swlat: 34.9, swlng: -90.3, nelat: 36.7, nelng: -81.6},
-                    'TX': {swlat: 25.8, swlng: -106.6, nelat: 36.5, nelng: -93.5},
-                    'UT': {swlat: 36.9, swlng: -114.1, nelat: 42.0, nelng: -109.0},
-                    'VT': {swlat: 42.7, swlng: -73.4, nelat: 45.0, nelng: -71.5},
-                    'VA': {swlat: 36.5, swlng: -83.7, nelat: 39.5, nelng: -75.2},
-                    'WA': {swlat: 45.5, swlng: -124.8, nelat: 49.0, nelng: -116.9},
-                    'WV': {swlat: 37.2, swlng: -82.6, nelat: 40.6, nelng: -77.7},
-                    'WI': {swlat: 42.5, swlng: -92.9, nelat: 47.3, nelng: -86.2},
-                    'WY': {swlat: 41.0, swlng: -111.1, nelat: 45.0, nelng: -104.0}
-                };
-                return states[state] || null;
+            bindEvents() {
+                this.categorySelect.addEventListener('change', () => {
+                    this.usedSpecies.clear();
+                    this.questionQueue = [];
+                    this.gameContent.innerHTML = '<div class="loading">Loading new species...</div>';
+                    this.preloadQuestions().then(() => this.loadNextQuestion());
+                });
+                
+                this.difficultySelect.addEventListener('change', () => {
+                    this.usedSpecies.clear();
+                    this.questionQueue = [];
+                    this.gameContent.innerHTML = '<div class="loading">Loading new questions...</div>';
+                    this.preloadQuestions().then(() => this.loadNextQuestion());
+                });
+                
+                this.regionSelect.addEventListener('change', () => {
+                    this.usedSpecies.clear();
+                    this.questionQueue = [];
+                    this.gameContent.innerHTML = '<div class="loading">Loading regional species...</div>';
+                    this.preloadQuestions().then(() => this.loadNextQuestion());
+                });
             }
             
             getRegionBounds(region) {
                 const regions = {
                     'global': null,
-                    'northeast': {swlat: 39.7, swlng: -80.5, nelat: 47.5, nelng: -66.9},
-                    'southeast': {swlat: 24.4, swlng: -88.5, nelat: 39.7, nelng: -75.4},
-                    'midwest': {swlat: 36.9, swlng: -104.0, nelat: 49.4, nelng: -80.5},
-                    'southwest': {swlat: 25.8, swlng: -125.0, nelat: 42.0, nelng: -93.5},
-                    'west': {swlat: 32.5, swlng: -125.0, nelat: 49.0, nelng: -104.0},
-                    'pacific': {swlat: 42.0, swlng: -125.0, nelat: 49.0, nelng: -116.9},
-                    'canada': {swlat: 41.6, swlng: -141.0, nelat: 83.1, nelng: -52.6},
-                    'uk': {swlat: 49.9, swlng: -10.7, nelat: 60.8, nelng: 1.8},
-                    'australia': {swlat: -43.6, swlng: 113.3, nelat: -10.7, nelng: 153.6},
-                    'europe': {swlat: 35.8, swlng: -10.7, nelat: 71.2, nelng: 40.2}
+                    // US Regions
+                    'northeast': { swlat: 39.7, swlng: -80.5, nelat: 47.5, nelng: -66.9 },
+                    'southeast': { swlat: 24.4, swlng: -88.5, nelat: 39.7, nelng: -75.4 },
+                    'midwest': { swlat: 36.9, swlng: -104.0, nelat: 49.4, nelng: -80.5 },
+                    'southwest': { swlat: 25.8, swlng: -125.0, nelat: 42.0, nelng: -93.5 },
+                    'west': { swlat: 32.5, swlng: -125.0, nelat: 49.0, nelng: -104.0 },
+                    'pacific': { swlat: 42.0, swlng: -125.0, nelat: 49.0, nelng: -116.9 },
+                    // US States
+                    'california': { swlat: 32.5, swlng: -124.5, nelat: 42.0, nelng: -114.1 },
+                    'texas': { swlat: 25.8, swlng: -106.6, nelat: 36.5, nelng: -93.5 },
+                    'florida': { swlat: 24.4, swlng: -87.6, nelat: 31.0, nelng: -79.8 },
+                    'new-york': { swlat: 40.4, swlng: -79.8, nelat: 45.0, nelng: -71.8 },
+                    'pennsylvania': { swlat: 39.7, swlng: -80.5, nelat: 42.5, nelng: -74.7 },
+                    'illinois': { swlat: 36.9, swlng: -91.5, nelat: 42.5, nelng: -87.0 },
+                    'ohio': { swlat: 38.4, swlng: -84.8, nelat: 42.3, nelng: -80.5 },
+                    'michigan': { swlat: 41.6, swlng: -90.4, nelat: 48.3, nelng: -82.1 },
+                    'georgia': { swlat: 30.3, swlng: -85.6, nelat: 35.0, nelng: -80.8 },
+                    'north-carolina': { swlat: 33.8, swlng: -84.3, nelat: 36.6, nelng: -75.4 },
+                    'virginia': { swlat: 36.5, swlng: -83.7, nelat: 39.5, nelng: -75.2 },
+                    'washington': { swlat: 45.5, swlng: -124.8, nelat: 49.0, nelng: -116.9 },
+                    'arizona': { swlat: 31.3, swlng: -114.8, nelat: 37.0, nelng: -109.0 },
+                    'massachusetts': { swlat: 41.2, swlng: -73.5, nelat: 42.9, nelng: -69.9 },
+                    'colorado': { swlat: 36.9, swlng: -109.1, nelat: 41.0, nelng: -102.0 },
+                    // Other regions
+                    'canada': { swlat: 41.6, swlng: -141.0, nelat: 83.1, nelng: -52.6 },
+                    'uk': { swlat: 49.9, swlng: -10.7, nelat: 60.8, nelng: 1.8 },
+                    'australia': { swlat: -43.6, swlng: 113.3, nelat: -10.7, nelng: 153.6 },
+                    'europe': { swlat: 35.8, swlng: -10.7, nelat: 71.2, nelng: 40.2 }
                 };
+                
                 return regions[region] || null;
             }
             
-            async preloadQuestions() {
-                while (this.questionQueue.length < 5) {
-                    const observations = await this.fetchSpeciesData();
-                    if (observations && observations.length > 0) {
-                        const questions = await this.processObservations(observations);
-                        this.questionQueue.push(...questions);
-                    } else {
-                        break;
-                    }
-                }
+            getCategoryTaxonIds(category) {
+                // Using iNaturalist's taxon IDs for specific groups
+                const categories = {
+                    'all': null,
+                    'birds': [3], // Aves
+                    'plants': [47126], // Plantae
+                    'insects': [47158], // Insecta
+                    'mammals': [40151], // Mammalia
+                    'fish': [47178], // Actinopterygii (ray-finned fish)
+                    'reptiles': [26036], // Reptilia
+                    'amphibians': [20978], // Amphibia
+                    'arachnids': [47119], // Arachnida
+                    'mollusks': [47115], // Mollusca
+                    'fungi': [47170] // Fungi
+                };
+                
+                return categories[category];
             }
             
-            async fetchSpeciesData() {
-                const taxonIds = this.getCategoryTaxonIds(this.categorySelect.value);
-                const qualityGrade = this.difficultySelect.value === 'hard' ? 'research' : 'needs_id,research';
-                const popular = this.difficultySelect.value === 'easy' ? 'true' : 'false';
-                const page = Math.floor(Math.random() * 50) + 1;
-                const region = this.regionSelect.value;
-                const bounds = this.getStateBounds(region) || this.getRegionBounds(region);
-                
-                let url = `https://api.inaturalist.org/v1/observations?quality_grade=${qualityGrade}&popular=${popular}&photos=true&per_page=50&page=${page}&order=random&details=all`;
-                
-                if (taxonIds) {
-                    url += '&' + taxonIds.map(id => `taxon_id=${id}`).join('&');
-                }
-                
-                if (bounds) {
-                    url += `&swlat=${bounds.swlat}&swlng=${bounds.swlng}&nelat=${bounds.nelat}&nelng=${bounds.nelng}`;
-                }
+            async preloadQuestions() {
+                if (this.isPreloading) return;
+                this.isPreloading = true;
                 
                 try {
-                    const response = await fetch(url);
-                    return response.ok ? (await response.json()).results : [];
+                    // Preload 5 questions
+                    while (this.questionQueue.length < 5) {
+                        const observations = await this.fetchSpeciesData();
+                        if (observations && observations.length > 0) {
+                            const questions = await this.processObservationsIntoQuestions(observations);
+                            this.questionQueue.push(...questions);
+                        } else {
+                            // If no data, break to avoid infinite loop
+                            break;
+                        }
+                    }
+                    console.log(`Preloaded ${this.questionQueue.length} questions`);
                 } catch (error) {
-                    console.error('Error fetching data:', error);
-                    return [];
+                    console.error('Error preloading questions:', error);
+                } finally {
+                    this.isPreloading = false;
                 }
             }
             
-            async processObservations(observations) {
-                const difficulty = this.difficultySelect.value;
-                let validObservations = observations.filter(obs => 
+            async processObservationsIntoQuestions(observations) {
+                const validObservations = observations.filter(obs => 
                     obs.taxon && 
                     obs.taxon.preferred_common_name && 
                     obs.photos && 
@@ -862,12 +533,14 @@
                 );
                 
                 if (validObservations.length < 8) {
+                    // Reset used species if we're running out
                     this.usedSpecies.clear();
                 }
                 
                 const questions = [];
                 const used = new Set();
                 
+                // Create multiple questions from this batch
                 const maxQuestions = Math.min(3, Math.floor(validObservations.length / 4));
                 for (let i = 0; i < maxQuestions; i++) {
                     const availableObs = validObservations.filter(obs => 
@@ -880,108 +553,151 @@
                     used.add(correctObservation.taxon.id);
                     this.usedSpecies.add(correctObservation.taxon.id);
                     
-                    let wrongObservations = [];
+                    // Generate wrong answers
+                    const wrongObservations = availableObs
+                        .filter(obs => obs.taxon.id !== correctObservation.taxon.id)
+                        .sort(() => Math.random() - 0.5)
+                        .slice(0, 3);
                     
-                    if (difficulty === 'medium' || difficulty === 'hard') {
-                        // Try to get same genus species
-                        if (correctObservation.taxon.genus) {
-                            wrongObservations = availableObs.filter(obs => 
-                                obs.taxon.id !== correctObservation.taxon.id &&
-                                obs.taxon.genus === correctObservation.taxon.genus
-                            );
-                        }
-                        
-                        // If not enough, try same family
-                        if (wrongObservations.length < 3 && correctObservation.taxon.family) {
-                            const familyMatches = availableObs.filter(obs => 
-                                obs.taxon.id !== correctObservation.taxon.id &&
-                                obs.taxon.family === correctObservation.taxon.family &&
-                                !wrongObservations.find(w => w.taxon.id === obs.taxon.id)
-                            );
-                            wrongObservations.push(...familyMatches);
-                        }
-                        
-                        // If still not enough, try same order
-                        if (wrongObservations.length < 3 && correctObservation.taxon.order) {
-                            const orderMatches = availableObs.filter(obs => 
-                                obs.taxon.id !== correctObservation.taxon.id &&
-                                obs.taxon.order === correctObservation.taxon.order &&
-                                !wrongObservations.find(w => w.taxon.id === obs.taxon.id)
-                            );
-                            wrongObservations.push(...orderMatches);
-                        }
-                    }
+                    wrongObservations.forEach(obs => used.add(obs.taxon.id));
                     
-                    // Fallback to any available species
-                    if (wrongObservations.length < 3) {
-                        wrongObservations = availableObs.filter(obs => 
-                            obs.taxon.id !== correctObservation.taxon.id
-                        );
-                    }
-                    
-                    wrongObservations = wrongObservations.sort(() => Math.random() - 0.5).slice(0, 3);
-                    
-                    if (wrongObservations.length === 3) {
-                        wrongObservations.forEach(obs => used.add(obs.taxon.id));
-                        questions.push({
-                            correct: correctObservation,
-                            options: [correctObservation, ...wrongObservations].sort(() => Math.random() - 0.5),
-                            difficulty: difficulty
-                        });
-                    }
+                    questions.push({
+                        correct: correctObservation,
+                        options: this.shuffleArray([correctObservation, ...wrongObservations])
+                    });
                 }
                 
                 return questions;
             }
             
+            async fetchSpeciesData() {
+                const category = this.categorySelect.value;
+                const difficulty = this.difficultySelect.value;
+                const region = this.regionSelect.value;
+                
+                console.log('Fetching data for category:', category, 'region:', region);
+                
+                const qualityGrade = difficulty === 'hard' ? 'research' : 'needs_id,research';
+                const popular = difficulty === 'easy' ? 'true' : 'false';
+                
+                // Get category-specific taxon IDs
+                const taxonIds = this.getCategoryTaxonIds(category);
+                
+                // Get regional bounds
+                const bounds = this.getRegionBounds(region);
+                console.log('Region bounds:', bounds);
+                
+                try {
+                    const randomPage = Math.floor(Math.random() * 50) + 1;
+                    
+                    // Build taxon parameter
+                    let taxonParam = '';
+                    if (taxonIds && taxonIds.length > 0) {
+                        taxonParam = taxonIds.map(id => `taxon_id=${id}`).join('&') + '&';
+                    }
+                    
+                    let boundsParam = '';
+                    if (bounds) {
+                        boundsParam = `&swlat=${bounds.swlat}&swlng=${bounds.swlng}&nelat=${bounds.nelat}&nelng=${bounds.nelng}`;
+                        console.log('Adding bounds parameter:', boundsParam);
+                    }
+                    
+                    const apiUrl = `https://api.inaturalist.org/v1/observations?` +
+                        `${taxonParam}` +
+                        `quality_grade=${qualityGrade}&` +
+                        `popular=${popular}&` +
+                        `photos=true&` +
+                        `per_page=30&` +
+                        `page=${randomPage}&` +
+                        `order=random` +
+                        boundsParam;
+                    
+                    console.log('Final API URL:', apiUrl);
+                    
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) throw new Error('API request failed');
+                    
+                    const data = await response.json();
+                    console.log('Received', data.results.length, 'observations for category:', category, 'region:', region);
+                    return data.results;
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    return this.getFallbackData();
+                }
+            }
+            
+            getFallbackData() {
+                // Fallback data in case API fails
+                return [
+                    {
+                        id: 1,
+                        taxon: {
+                            id: 47126,
+                            name: 'Quercus',
+                            preferred_common_name: 'Oak',
+                            iconic_taxon_name: 'Plantae'
+                        },
+                        photos: [{
+                            url: 'https://inaturalist-open-data.s3.amazonaws.com/photos/1/medium.jpg'
+                        }]
+                    }
+                ];
+            }
+            
             async loadNextQuestion() {
-                if (this.questionQueue.length < 2) {
+                // Check if we need to preload more questions
+                if (this.questionQueue.length < 2 && !this.isPreloading) {
                     this.preloadQuestions();
                 }
                 
+                // If we have a question ready, use it
                 if (this.questionQueue.length > 0) {
                     this.currentQuestion = this.questionQueue.shift();
                     this.renderQuestion();
+                    return;
+                }
+                
+                // Fallback: load question directly if queue is empty
+                this.gameContent.innerHTML = '<div class="loading">Loading next question...</div>';
+                
+                const observations = await this.fetchSpeciesData();
+                const questions = await this.processObservationsIntoQuestions(observations);
+                
+                if (questions.length > 0) {
+                    this.currentQuestion = questions[0];
+                    this.questionQueue.push(...questions.slice(1));
+                    this.renderQuestion();
+                } else {
+                    this.gameContent.innerHTML = '<div class="loading">No species found for this selection. Try different filters.</div>';
                 }
             }
             
             renderQuestion() {
-                const {correct, options, difficulty} = this.currentQuestion;
-                const url = correct.photos[0].url.replace('square', 'medium');
-                const useScientific = difficulty === 'hard';
-                
-                // Track this species as encountered
-                this.speciesEncountered.add(correct.taxon.id);
-                this.updateDiversityMetrics();
+                const { correct, options } = this.currentQuestion;
+                const photo = correct.photos[0];
+                const imageUrl = photo.url.replace('square', 'medium');
                 
                 this.gameContent.innerHTML = `
-                    <div class="image-container" onclick="game.openModal('${url}')">
-                        <img src="${url}" class="species-image" alt="Species to identify" />
-                        <div class="zoom-icon">🔍</div>
-                    </div>
-                    <div class="next-button-container">
-                        <button class="btn" onclick="game.loadNextQuestion()" id="nextBtn" style="display:none;">
-                            Next Question →
-                        </button>
+                    <div class="image-container">
+                        <img src="${imageUrl}" alt="Species to identify" class="species-image" />
                     </div>
                     <div class="question">What species is this?</div>
                     <div class="options">
                         ${options.map((option, index) => `
-                            <div class="option" onclick="game.selectAnswer(${index})">
-                                <div class="scientific-name">
-                                    ${useScientific ? `<em>${option.taxon.name}</em>` : option.taxon.preferred_common_name}
-                                </div>
-                                ${useScientific ? 
-                                    `<div class="common-name">${option.taxon.preferred_common_name}</div>` : 
-                                    (option.taxon.name !== option.taxon.preferred_common_name ? 
-                                        `<small><em>${option.taxon.name}</em></small>` : '')}
+                            <div class="option" data-index="${index}" onclick="game.selectAnswer(${index})">
+                                ${option.taxon.preferred_common_name}
+                                ${option.taxon.name !== option.taxon.preferred_common_name ? 
+                                  `<br><small><em>${option.taxon.name}</em></small>` : ''}
                             </div>
                         `).join('')}
                     </div>
                     <div class="feedback" id="feedback"></div>
                     <div class="species-info" id="speciesInfo" style="display:none;"></div>
                     <div class="controls">
-                        <button class="btn skip" onclick="game.skipQuestion()" id="skipBtn">Skip</button>
+                        <button class="btn" onclick="game.loadNextQuestion()" id="nextBtn" style="display:none;">
+                            Next Question
+                        </button>
                     </div>
                 `;
             }
@@ -992,58 +708,186 @@
                     option => option.taxon.id === this.currentQuestion.correct.taxon.id
                 );
                 
-                options.forEach(option => {
-                    option.classList.add('disabled');
-                    option.classList.add('revealed');
-                });
+                options.forEach(option => option.classList.add('disabled'));
                 
                 if (selectedIndex === correctIndex) {
                     options[selectedIndex].classList.add('correct');
                     this.score += 10;
                     this.streak += 1;
-                    
-                    // Track correctly identified species
-                    this.speciesCorrect.add(this.currentQuestion.correct.taxon.id);
-                    
-                    document.getElementById('feedback').textContent = '✅ Correct!';
+                    document.getElementById('feedback').textContent = '✅ Correct! Well done!';
                     document.getElementById('feedback').style.color = '#4CAF50';
                 } else {
                     options[selectedIndex].classList.add('incorrect');
                     options[correctIndex].classList.add('correct');
                     this.streak = 0;
                     document.getElementById('feedback').innerHTML = 
-                        `❌ Correct: <strong>${this.currentQuestion.correct.taxon.preferred_common_name}</strong>`;
+                        `❌ Not quite! The correct answer is <strong>${this.currentQuestion.correct.taxon.preferred_common_name}</strong>`;
                     document.getElementById('feedback').style.color = '#f44336';
                 }
                 
                 this.total += 1;
                 this.updateScore();
-                document.getElementById('skipBtn').style.display = 'none';
+                this.showSpeciesInfo();
                 document.getElementById('nextBtn').style.display = 'block';
             }
             
-            skipQuestion() {
-                const options = document.querySelectorAll('.option');
-                const correctIndex = this.currentQuestion.options.findIndex(
-                    option => option.taxon.id === this.currentQuestion.correct.taxon.id
-                );
+            showSpeciesInfo() {
+                const species = this.currentQuestion.correct;
+                const infoDiv = document.getElementById('speciesInfo');
                 
-                options.forEach(option => {
-                    option.classList.add('disabled');
-                    option.classList.add('revealed');
-                });
+                if (infoDiv) {
+                    // Build species information
+                    let infoHTML = `
+                        <div class="species-info-header">
+                            <strong>${species.taxon.preferred_common_name}</strong>
+                            ${species.taxon.name !== species.taxon.preferred_common_name ? 
+                                `<br><em>${species.taxon.name}</em>` : ''}
+                        </div>
+                    `;
+                    
+                    // Add taxonomic information
+                    if (species.taxon.rank) {
+                        infoHTML += `<div class="taxonomy">Rank: ${species.taxon.rank}</div>`;
+                    }
+                    
+                    // Add basic info from the observation
+                    let facts = [];
+                    
+                    // Location info
+                    if (species.place_guess) {
+                        facts.push(`📍 Observed in: ${species.place_guess}`);
+                    }
+                    
+                    // Date info
+                    if (species.observed_on_details && species.observed_on_details.date) {
+                        const date = new Date(species.observed_on_details.date);
+                        const month = date.toLocaleString('default', { month: 'long' });
+                        facts.push(`📅 Often observed in: ${month}`);
+                    }
+                    
+                    // Conservation status
+                    if (species.taxon.conservation_status) {
+                        const status = species.taxon.conservation_status;
+                        const statusEmoji = this.getConservationEmoji(status.status);
+                        facts.push(`${statusEmoji} Conservation: ${status.status_name || status.status}`);
+                    }
+                    
+                    // Basic taxonomy facts
+                    if (species.taxon.iconic_taxon_name === 'Plantae') {
+                        facts.push(`🌱 This is a plant species`);
+                    } else if (species.taxon.iconic_taxon_name === 'Animalia') {
+                        facts.push(`🐾 This is an animal species`);
+                    }
+                    
+                    // Quality grade info
+                    if (species.quality_grade === 'research') {
+                        facts.push(`✅ This is a research-grade observation, verified by experts`);
+                    }
+                    
+                    // Add number of photos
+                    if (species.photos && species.photos.length > 1) {
+                        facts.push(`📸 This observation includes ${species.photos.length} photos`);
+                    }
+                    
+                    // Generate interesting facts based on common names
+                    const commonFacts = this.getCommonNameFacts(species.taxon.preferred_common_name);
+                    facts.push(...commonFacts);
+                    
+                    // Limit to 4 most interesting facts
+                    facts = facts.slice(0, 4);
+                    
+                    if (facts.length > 0) {
+                        infoHTML += `<div class="species-facts">${facts.map(fact => 
+                            `<div class="fact">${fact}</div>`
+                        ).join('')}</div>`;
+                    }
+                    
+                    infoDiv.innerHTML = infoHTML;
+                    infoDiv.style.display = 'block';
+                }
+            }
+            
+            getConservationEmoji(status) {
+                const statusMap = {
+                    'LC': '✅', 'NT': '⚠️', 'VU': '🟡', 'EN': '🟠', 
+                    'CR': '🔴', 'EW': '💀', 'EX': '💀'
+                };
+                return statusMap[status] || '📊';
+            }
+            
+            getCommonNameFacts(commonName) {
+                const name = commonName.toLowerCase();
+                const facts = [];
                 
-                options[correctIndex].classList.add('correct');
-                this.total += 1;
-                this.streak = 0;
+                // Bird facts
+                if (name.includes('cardinal')) facts.push('🐦 Cardinals mate for life and the male feeds the female during courtship');
+                if (name.includes('robin')) facts.push('🐦 Robins can live up to 13 years and are often the first to sing at dawn');
+                if (name.includes('hawk')) facts.push('🦅 Hawks have incredible eyesight, up to 8 times sharper than humans');
+                if (name.includes('owl')) facts.push('🦉 Owls can rotate their heads 270 degrees and fly silently');
+                if (name.includes('hummingbird')) facts.push('🐦 Hummingbirds beat their wings 50-80 times per second');
+                if (name.includes('eagle')) facts.push('🦅 Eagles can spot prey from over 2 miles away');
+                if (name.includes('woodpecker')) facts.push('🐦 Woodpeckers have shock-absorbing skulls and sticky tongues');
+                if (name.includes('crow') || name.includes('raven')) facts.push('🐦 Crows and ravens are among the most intelligent birds, using tools');
                 
-                document.getElementById('feedback').innerHTML = 
-                    `⏭️ Skipped. Answer: <strong>${this.currentQuestion.correct.taxon.preferred_common_name}</strong>`;
-                document.getElementById('feedback').style.color = '#ffc107';
+                // Mammal facts
+                if (name.includes('deer')) facts.push('🦌 Deer can jump up to 10 feet high and run 30 mph');
+                if (name.includes('squirrel')) facts.push('🐿️ Squirrels can find buried nuts months later using their incredible memory');
+                if (name.includes('rabbit')) facts.push('🐰 Rabbits can see nearly 360 degrees and sleep with their eyes open');
+                if (name.includes('fox')) facts.push('🦊 Foxes use Earth\'s magnetic field to hunt and can hear prey under snow');
+                if (name.includes('bear')) facts.push('🐻 Bears have an excellent sense of smell, 7 times better than a bloodhound');
+                if (name.includes('wolf')) facts.push('🐺 Wolves can travel up to 50 miles in a day and have 42 teeth');
+                if (name.includes('bat')) facts.push('🦇 Bats are the only mammals capable of true flight');
                 
-                this.updateScore();
-                document.getElementById('skipBtn').style.display = 'none';
-                document.getElementById('nextBtn').style.display = 'block';
+                // Tree facts
+                if (name.includes('oak')) facts.push('🌳 A single oak tree can support over 500 species of insects and animals');
+                if (name.includes('maple')) facts.push('🍁 Maple syrup requires 40 gallons of sap to make 1 gallon of syrup');
+                if (name.includes('pine')) facts.push('🌲 Pine trees can live for over 1,000 years and some grow to 200+ feet tall');
+                if (name.includes('willow')) facts.push('🌳 Willow bark contains aspirin-like compounds used for pain relief');
+                if (name.includes('redwood') || name.includes('sequoia')) facts.push('🌲 Redwoods are the tallest trees on Earth, reaching over 350 feet');
+                if (name.includes('cherry')) facts.push('🌸 Cherry blossoms only bloom for about 2 weeks each year');
+                
+                // Flower facts
+                if (name.includes('sunflower')) facts.push('🌻 Sunflowers track the sun across the sky when young, called heliotropism');
+                if (name.includes('rose')) facts.push('🌹 Roses have been cultivated for over 5,000 years and are related to apples');
+                if (name.includes('daisy')) facts.push('🌼 Daisies are actually composite flowers made of many tiny flowers');
+                if (name.includes('tulip')) facts.push('🌷 Tulips were once so valuable in Holland they caused an economic bubble');
+                if (name.includes('orchid')) facts.push('🌺 Orchids are one of the largest plant families with over 25,000 species');
+                
+                // Insect facts
+                if (name.includes('butterfly')) facts.push('🦋 Butterflies taste with their feet and smell with their antennae');
+                if (name.includes('monarch')) facts.push('🦋 Monarch butterflies migrate up to 3,000 miles, taking 4 generations');
+                if (name.includes('bee')) facts.push('🐝 Bees communicate through dance and a colony can contain up to 80,000 bees');
+                if (name.includes('ant')) facts.push('🐜 Ants can lift 10-50 times their own body weight');
+                if (name.includes('dragonfly')) facts.push('🜟 Dragonflies can see in nearly 360 degrees and catch 95% of their prey');
+                if (name.includes('firefly') || name.includes('lightning bug')) facts.push('✨ Fireflies produce light without heat through bioluminescence');
+                
+                // Fish facts
+                if (name.includes('salmon')) facts.push('🐟 Salmon can swim upstream and jump up waterfalls to spawn');
+                if (name.includes('shark')) facts.push('🦈 Sharks have been around for over 400 million years');
+                if (name.includes('trout')) facts.push('🐟 Trout can live up to 20 years and are indicators of clean water');
+                if (name.includes('bass')) facts.push('🐟 Bass are excellent parents, with males guarding their nests');
+                
+                // Reptile facts
+                if (name.includes('turtle')) facts.push('🐢 Some turtles can live over 100 years and navigate using magnetic fields');
+                if (name.includes('snake')) facts.push('🐍 Snakes can unhinge their jaws to swallow prey larger than their head');
+                if (name.includes('lizard')) facts.push('🦎 Many lizards can regrow their tails if they lose them to predators');
+                if (name.includes('gecko')) facts.push('🦎 Geckos can walk on walls and ceilings using millions of tiny hairs');
+                
+                // Amphibian facts
+                if (name.includes('frog')) facts.push('🐸 Frogs absorb water through their skin and some can freeze solid in winter');
+                if (name.includes('toad')) facts.push('🐸 Toads can live up to 40 years and some species give birth through their skin');
+                if (name.includes('salamander')) facts.push('🦎 Salamanders can regenerate lost limbs, tails, and even parts of organs');
+                
+                // Spider facts
+                if (name.includes('spider')) facts.push('🕷️ Spider silk is stronger than steel by weight and more elastic than rubber');
+                if (name.includes('tarantula')) facts.push('🕷️ Tarantulas can live up to 30 years and regrow lost legs');
+                if (name.includes('black widow')) facts.push('🕷️ Only female black widows are dangerous; males are much smaller');
+                
+                // Fungi facts
+                if (name.includes('mushroom')) facts.push('🍄 Mushrooms are more closely related to animals than plants');
+                if (name.includes('moss')) facts.push('🌿 Moss can survive in space and doesn\'t have roots, stems, or leaves');
+                
+                return facts.slice(0, 2); // Return max 2 facts per species
             }
             
             updateScore() {
@@ -1053,41 +897,15 @@
                 
                 const accuracy = this.total > 0 ? (this.score / (this.total * 10)) * 100 : 0;
                 document.getElementById('progressFill').style.width = `${accuracy}%`;
-                
-                this.updateDiversityMetrics();
             }
             
-            updateDiversityMetrics() {
-                document.getElementById('speciesSeen').textContent = this.speciesEncountered.size;
-                document.getElementById('speciesLearned').textContent = this.speciesCorrect.size;
-            }
-            
-            openModal(url) {
-                const modal = document.getElementById('imageModal');
-                const img = document.getElementById('modalImage');
-                img.src = url.replace('medium', 'large');
-                modal.style.display = 'flex';
-                this.currentZoom = 1;
-                img.style.transform = 'scale(1)';
-            }
-            
-            closeModal() {
-                document.getElementById('imageModal').style.display = 'none';
-            }
-            
-            zoomIn() {
-                this.currentZoom = Math.min(5, this.currentZoom + 0.25);
-                document.getElementById('modalImage').style.transform = `scale(${this.currentZoom})`;
-            }
-            
-            zoomOut() {
-                this.currentZoom = Math.max(0.5, this.currentZoom - 0.25);
-                document.getElementById('modalImage').style.transform = `scale(${this.currentZoom})`;
-            }
-            
-            resetZoom() {
-                this.currentZoom = 1;
-                document.getElementById('modalImage').style.transform = 'scale(1)';
+            shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
             }
         }
         
