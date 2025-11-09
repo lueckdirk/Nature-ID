@@ -121,7 +121,8 @@ export class QuestionGenerator {
             wrongObservations.push(...familyMatches);
         }
 
-        // Strategy 3: If still not enough, fetch related species from API and enrich them
+        // Strategy 3: If still not enough, fetch related species from API
+        // Note: These are automatically enriched with taxonomy in fetchRelatedSpecies
         if (wrongObservations.length < 3) {
             const relatedSpecies = await INaturalistAPI.fetchRelatedSpecies(
                 targetTaxon,
@@ -129,16 +130,7 @@ export class QuestionGenerator {
                 10
             );
             
-            // IMPORTANT: Enrich the related species with taxonomy data
-            const enrichedRelated = [];
-            for (const obs of relatedSpecies) {
-                const enriched = await INaturalistAPI.enrichObservationWithTaxonomy(obs);
-                enrichedRelated.push(enriched);
-                // Small delay to avoid rate limiting
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-            
-            const filtered = enrichedRelated.filter(obs =>
+            const filtered = relatedSpecies.filter(obs =>
                 !wrongObservations.find(w => w.taxon.id === obs.taxon.id) &&
                 !used.has(obs.taxon.id)
             );
