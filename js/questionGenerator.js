@@ -97,27 +97,31 @@ export class QuestionGenerator {
         const targetTaxon = correctObservation.taxon;
 
         // Strategy 1: Try to find same genus species from available observations
-        if (targetTaxon.genus) {
+        // NOTE: Using genus_name instead of genus (enriched field)
+        if (targetTaxon.genus_name && targetTaxon.genus_name !== 'Unknown') {
             const genusMatches = availableObs.filter(obs => 
                 obs.taxon.id !== targetTaxon.id &&
-                obs.taxon.genus === targetTaxon.genus &&
+                obs.taxon.genus_name === targetTaxon.genus_name &&
+                obs.taxon.genus_name !== 'Unknown' &&
                 !used.has(obs.taxon.id)
             );
             wrongObservations.push(...genusMatches);
         }
 
         // Strategy 2: If not enough, try same family from available observations
-        if (wrongObservations.length < 3 && targetTaxon.family) {
+        // NOTE: Using family_name instead of family (enriched field)
+        if (wrongObservations.length < 3 && targetTaxon.family_name && targetTaxon.family_name !== 'Unknown') {
             const familyMatches = availableObs.filter(obs => 
                 obs.taxon.id !== targetTaxon.id &&
-                obs.taxon.family === targetTaxon.family &&
+                obs.taxon.family_name === targetTaxon.family_name &&
+                obs.taxon.family_name !== 'Unknown' &&
                 !wrongObservations.find(w => w.taxon.id === obs.taxon.id) &&
                 !used.has(obs.taxon.id)
             );
             wrongObservations.push(...familyMatches);
         }
 
-        // Strategy 3: If still not enough, fetch related species from API
+        // Strategy 3: If still not enough, fetch related species from API and enrich them
         if (wrongObservations.length < 3) {
             const relatedSpecies = await INaturalistAPI.fetchRelatedSpecies(
                 targetTaxon,
@@ -125,7 +129,16 @@ export class QuestionGenerator {
                 10
             );
             
-            const filtered = relatedSpecies.filter(obs =>
+            // IMPORTANT: Enrich the related species with taxonomy data
+            const enrichedRelated = [];
+            for (const obs of relatedSpecies) {
+                const enriched = await INaturalistAPI.enrichObservationWithTaxonomy(obs);
+                enrichedRelated.push(enriched);
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            const filtered = enrichedRelated.filter(obs =>
                 !wrongObservations.find(w => w.taxon.id === obs.taxon.id) &&
                 !used.has(obs.taxon.id)
             );
