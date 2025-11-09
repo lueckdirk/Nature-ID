@@ -5,67 +5,62 @@ import { API_CONFIG, TAXON_IDS, US_STATE_BOUNDS, REGION_BOUNDS, DIFFICULTY_SETTI
  */
 export class INaturalistAPI {
     /**
-     * Fetch detailed taxon information including full taxonomic hierarchy
-     * @param {number} taxonId - The taxon ID to fetch
-     * @returns {Promise<Object|null>} Taxon object with ancestors, or null if failed
+     * Extract taxonomic information from the taxon's ancestors array
+     * This method processes the ancestor_ids and ancestors data already present in observations
+     * @param {Object} taxon - The taxon object from an observation
+     * @returns {Object} Enriched taxon with genus_name, family_name, etc.
      */
-    static async fetchTaxonDetails(taxonId) {
-        try {
-            const response = await fetch(`https://api.inaturalist.org/v1/taxa/${taxonId}`);
-            if (response.ok) {
-                const data = await response.json();
-                return data.results?.[0] || null;
+    static enrichTaxonFromAncestors(taxon) {
+        // If already enriched, return as-is
+        if (taxon.genus_name || taxon.family_name) {
+            return taxon;
+        }
+
+        // Initialize taxonomy fields
+        taxon.genus_name = 'Unknown';
+        taxon.family_name = 'Unknown';
+        taxon.order_name = 'Unknown';
+        taxon.class_name = 'Unknown';
+        taxon.genus_id = null;
+        taxon.family_id = null;
+        taxon.order_id = null;
+
+        // Check if we have ancestors array (available with details=all)
+        if (taxon.ancestors && Array.isArray(taxon.ancestors)) {
+            for (const ancestor of taxon.ancestors) {
+                switch(ancestor.rank) {
+                    case 'genus':
+                        taxon.genus_name = ancestor.name;
+                        taxon.genus_id = ancestor.id;
+                        break;
+                    case 'family':
+                        taxon.family_name = ancestor.name;
+                        taxon.family_id = ancestor.id;
+                        break;
+                    case 'order':
+                        taxon.order_name = ancestor.name;
+                        taxon.order_id = ancestor.id;
+                        break;
+                    case 'class':
+                        taxon.class_name = ancestor.name;
+                        break;
+                }
             }
-            return null;
-        } catch (error) {
-            console.error('Error fetching taxon details:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Extract taxonomic rank from ancestors array
-     * @param {Array} ancestors - Array of ancestor taxon objects
-     * @param {string} rank - The rank to find (genus, family, order, class, etc.)
-     * @returns {string} The name of the taxon at that rank, or 'Unknown'
-     */
-    static extractRankFromAncestors(ancestors, rank) {
-        if (!ancestors || !Array.isArray(ancestors)) return 'Unknown';
-        
-        const ancestor = ancestors.find(a => a.rank === rank);
-        return ancestor ? ancestor.name : 'Unknown';
-    }
-
-    /**
-     * Enrich observation with detailed taxonomy information
-     * @param {Object} observation - Observation object from API
-     * @returns {Promise<Object>} Observation with enriched taxon data
-     */
-    static async enrichObservationWithTaxonomy(observation) {
-        if (!observation.taxon || !observation.taxon.id) {
-            return observation;
         }
 
-        const taxonDetails = await this.fetchTaxonDetails(observation.taxon.id);
-        
-        if (taxonDetails && taxonDetails.ancestors) {
-            // Add the full taxonomic hierarchy to the observation
-            observation.taxon.genus_name = this.extractRankFromAncestors(taxonDetails.ancestors, 'genus');
-            observation.taxon.family_name = this.extractRankFromAncestors(taxonDetails.ancestors, 'family');
-            observation.taxon.order_name = this.extractRankFromAncestors(taxonDetails.ancestors, 'order');
-            observation.taxon.class_name = this.extractRankFromAncestors(taxonDetails.ancestors, 'class');
-            
-            // Also store the IDs for reference (useful for fetchRelatedSpecies)
-            const genusAncestor = taxonDetails.ancestors.find(a => a.rank === 'genus');
-            const familyAncestor = taxonDetails.ancestors.find(a => a.rank === 'family');
-            const orderAncestor = taxonDetails.ancestors.find(a => a.rank === 'order');
-            
-            observation.taxon.genus_id = genusAncestor?.id || null;
-            observation.taxon.family_id = familyAncestor?.id || null;
-            observation.taxon.order_id = orderAncestor?.id || null;
+        // Fallback: try to extract from the taxon object itself if it's at that rank
+        if (taxon.rank === 'species' || taxon.rank === 'subspecies') {
+            // For species, check if ancestor_ids exist and try alternative approach
+            // The taxon.name for species is typically "Genus species"
+            if (taxon.genus_name === 'Unknown' && taxon.name) {
+                const nameParts = taxon.name.split(' ');
+                if (nameParts.length >= 2) {
+                    taxon.genus_name = nameParts[0];
+                }
+            }
         }
-        
-        return observation;
+
+        return taxon;
     }
 
     /**
@@ -73,15 +68,15 @@ export class INaturalistAPI {
      * @param {string} category - Species category (birds, plants, etc.)
      * @param {string} difficulty - Difficulty level (easy, medium, hard)
      * @param {string} region - Geographic region or state code
-     * @param {boolean} enrichWithTaxonomy - Whether to fetch detailed taxonomy (default: true)
-     * @returns {Promise<Array>} Array of observation objects
+     * @returns {Promise<Array>} Array of observation objects with enriched taxonomy
      */
-    static async fetchObservations(category, difficulty, region, enrichWithTaxonomy = true) {
+    static async fetchObservations(category, difficulty, region) {
         const taxonIds = TAXON_IDS[category];
         const settings = DIFFICULTY_SETTINGS[difficulty];
         const page = Math.floor(Math.random() * API_CONFIG.MAX_PAGES) + 1;
         const bounds = US_STATE_BOUNDS[region] || REGION_BOUNDS[region];
         
+        // IMPORTANT: Using details=all to get ancestor information
         let url = `${API_CONFIG.BASE_URL}?quality_grade=${settings.qualityGrade}&popular=${settings.popular}&photos=true&per_page=${API_CONFIG.PHOTOS_PER_PAGE}&page=${page}&order=random&details=all`;
         
         if (taxonIds) {
@@ -98,20 +93,12 @@ export class INaturalistAPI {
                 const data = await response.json();
                 const observations = data.results || [];
                 
-                // Enrich observations with detailed taxonomy if requested
-                if (enrichWithTaxonomy && observations.length > 0) {
-                    // Add a small delay between requests to avoid rate limiting
-                    const enrichedObservations = [];
-                    for (const obs of observations) {
-                        if (this.isValidObservation(obs)) {
-                            const enriched = await this.enrichObservationWithTaxonomy(obs);
-                            enrichedObservations.push(enriched);
-                            // Small delay to be respectful to the API
-                            await new Promise(resolve => setTimeout(resolve, 100));
-                        }
+                // Enrich each observation's taxon with ancestor data
+                observations.forEach(obs => {
+                    if (obs.taxon) {
+                        this.enrichTaxonFromAncestors(obs.taxon);
                     }
-                    return enrichedObservations;
-                }
+                });
                 
                 return observations;
             }
@@ -142,7 +129,8 @@ export class INaturalistAPI {
         for (const { level, id } of taxonomicLevels) {
             if (!id) continue;
 
-            let url = `${API_CONFIG.BASE_URL}?quality_grade=research&photos=true&per_page=50&taxon_id=${id}&order=random`;
+            // IMPORTANT: Using details=all to get ancestor information
+            let url = `${API_CONFIG.BASE_URL}?quality_grade=research&photos=true&per_page=50&taxon_id=${id}&order=random&details=all`;
             
             if (bounds) {
                 url += `&swlat=${bounds.swlat}&swlng=${bounds.swlng}&nelat=${bounds.nelat}&nelng=${bounds.nelng}`;
@@ -153,6 +141,13 @@ export class INaturalistAPI {
                 if (response.ok) {
                     const data = await response.json();
                     const results = data.results || [];
+                    
+                    // Enrich each taxon with ancestor data
+                    results.forEach(obs => {
+                        if (obs.taxon) {
+                            this.enrichTaxonFromAncestors(obs.taxon);
+                        }
+                    });
                     
                     // Filter out the target species and ensure we have common names
                     const filtered = results.filter(obs => 
@@ -190,7 +185,7 @@ export class INaturalistAPI {
 
     /**
      * Get taxonomy information for display
-     * @param {Object} taxon - Taxon object (should be enriched with taxonomy data)
+     * @param {Object} taxon - Taxon object (enriched with ancestor data)
      * @returns {Object} Formatted taxonomy information
      */
     static getTaxonomyInfo(taxon) {
