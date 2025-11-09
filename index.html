@@ -4,9 +4,556 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nature ID Game</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/components.css">
-    <link rel="stylesheet" href="styles/modal.css">
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100%;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 700px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, #fff, #e0e6ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.game-area {
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.2em;
+    padding: 40px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn.skip {
+    background: rgba(255, 193, 7, 0.8);
+    color: #333;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+    
+    .game-area {
+        padding: 20px;
+    }
+}
+
+
+.menu-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.menu-bar select {
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.menu-bar select:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.score-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 350px;
+    margin: 20px auto;
+}
+
+.score-item {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 15px;
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.score-item-label {
+    font-size: 0.85em;
+    opacity: 0.9;
+    margin-bottom: 3px;
+}
+
+.score-item-value {
+    font-size: 1.4em;
+    font-weight: 700;
+}
+
+.diversity-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.diversity-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.diversity-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.diversity-item-label {
+    font-size: 0.8em;
+    opacity: 0.85;
+}
+
+.diversity-item-value {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.info-box {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    backdrop-filter: blur(10px);
+}
+
+.info-box a {
+    color: #e0e6ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.info-box a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.image-container {
+    width: 100%;
+    height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.species-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.species-image:hover {
+    transform: scale(1.05);
+}
+
+.zoom-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 8px;
+    border-radius: 50%;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    backdrop-filter: blur(5px);
+}
+
+.next-button-container {
+    text-align: center;
+    margin-bottom: 20px;
+    min-height: 50px;
+}
+
+.question {
+    text-align: center;
+    font-size: 1.3em;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+.options {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.option {
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid transparent;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-size: 1.1em;
+    backdrop-filter: blur(10px);
+}
+
+.option:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.option.correct {
+    background: rgba(76, 175, 80, 0.8);
+    border-color: #4CAF50;
+    animation: correctPulse 0.6s ease;
+}
+
+.option.incorrect {
+    background: rgba(244, 67, 54, 0.8);
+    border-color: #f44336;
+    animation: shake 0.6s ease;
+}
+
+.option.disabled {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.option .common-name,
+.option .taxonomy-info {
+    display: none;
+    font-size: 0.9em;
+    margin-top: 5px;
+    opacity: 0.9;
+}
+
+.option.revealed .common-name,
+.option.revealed .taxonomy-info {
+    display: block;
+}
+
+.taxonomy-info {
+    font-size: 0.85em;
+    opacity: 0.85;
+    font-style: italic;
+}
+
+@keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.feedback {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.1em;
+    min-height: 25px;
+    font-weight: 500;
+}
+
+.species-info {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.species-info-header {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #fff;
+}
+
+.species-info-header em {
+    font-size: 0.9em;
+    opacity: 0.8;
+    font-weight: 400;
+}
+
+.species-facts {
+    display: grid;
+    gap: 8px;
+}
+
+.fact {
+    font-size: 0.95em;
+    line-height: 1.4;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    margin: 15px 0 0 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+@media (max-width: 600px) {
+    .image-container {
+        height: 250px;
+    }
+    
+    .question {
+        font-size: 1.1em;
+    }
+    
+    .option {
+        padding: 12px 15px;
+        font-size: 1em;
+    }
+    
+    .menu-bar {
+        flex-direction: column;
+    }
+    
+    .menu-bar select {
+        width: 100%;
+        font-size: 0.9em;
+    }
+    
+    .controls {
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+}
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 95vw;
+    max-height: 95vh;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-image-container {
+    width: 100%;
+    height: 80vh;
+    overflow: auto;
+    position: relative;
+    cursor: grab;
+}
+
+.modal-image-container:active {
+    cursor: grabbing;
+}
+
+.modal-image {
+    display: block;
+    max-width: none;
+    height: auto;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+    transform-origin: center center;
+}
+
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1001;
+}
+
+.zoom-btn {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    backdrop-filter: blur(5px);
+    transition: background 0.3s ease;
+}
+
+.zoom-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.zoom-info {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    backdrop-filter: blur(5px);
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    z-index: 1002;
+}
+
+@media (max-width: 600px) {
+    .modal-image-container {
+        height: 70vh;
+    }
+}
+
+    </style>
 </head>
 <body>
     <div class="container">
@@ -157,6 +704,1028 @@
         </div>
     </div>
 
-    <script type="module" src="js/main.js"></script>
+    <script>
+// Configuration constants for the Nature ID Game
+
+const TAXON_IDS = {
+    'all': null,
+    'birds': [3],
+    'plants': [47126],
+    'insects': [47158],
+    'mammals': [40151],
+    'fish': [47178],
+    'reptiles': [26036],
+    'amphibians': [20978],
+    'arachnids': [47119],
+    'mollusks': [47115],
+    'fungi': [47170]
+};
+
+const US_STATE_BOUNDS = {
+    'AL': {swlat: 30.2, swlng: -88.5, nelat: 35.0, nelng: -84.9},
+    'AK': {swlat: 51.2, swlng: -179.1, nelat: 71.4, nelng: -129.9},
+    'AZ': {swlat: 31.3, swlng: -114.8, nelat: 37.0, nelng: -109.0},
+    'AR': {swlat: 33.0, swlng: -94.6, nelat: 36.5, nelng: -89.6},
+    'CA': {swlat: 32.5, swlng: -124.5, nelat: 42.0, nelng: -114.1},
+    'CO': {swlat: 36.9, swlng: -109.1, nelat: 41.0, nelng: -102.0},
+    'CT': {swlat: 40.9, swlng: -73.7, nelat: 42.1, nelng: -71.8},
+    'DE': {swlat: 38.4, swlng: -75.8, nelat: 39.8, nelng: -75.0},
+    'FL': {swlat: 24.4, swlng: -87.6, nelat: 31.0, nelng: -79.8},
+    'GA': {swlat: 30.3, swlng: -85.6, nelat: 35.0, nelng: -80.8},
+    'HI': {swlat: 18.9, swlng: -160.2, nelat: 22.2, nelng: -154.8},
+    'ID': {swlat: 41.9, swlng: -117.2, nelat: 49.0, nelng: -111.0},
+    'IL': {swlat: 36.9, swlng: -91.5, nelat: 42.5, nelng: -87.0},
+    'IN': {swlat: 37.7, swlng: -88.1, nelat: 41.8, nelng: -84.8},
+    'IA': {swlat: 40.4, swlng: -96.6, nelat: 43.5, nelng: -90.1},
+    'KS': {swlat: 36.9, swlng: -102.1, nelat: 40.0, nelng: -94.6},
+    'KY': {swlat: 36.5, swlng: -89.6, nelat: 39.1, nelng: -81.9},
+    'LA': {swlat: 28.9, swlng: -94.0, nelat: 33.0, nelng: -88.8},
+    'ME': {swlat: 42.9, swlng: -71.1, nelat: 47.5, nelng: -66.9},
+    'MD': {swlat: 37.9, swlng: -79.5, nelat: 39.7, nelng: -75.0},
+    'MA': {swlat: 41.2, swlng: -73.5, nelat: 42.9, nelng: -69.9},
+    'MI': {swlat: 41.6, swlng: -90.4, nelat: 48.3, nelng: -82.1},
+    'MN': {swlat: 43.5, swlng: -97.2, nelat: 49.4, nelng: -89.5},
+    'MS': {swlat: 30.2, swlng: -91.7, nelat: 35.0, nelng: -88.1},
+    'MO': {swlat: 35.9, swlng: -95.8, nelat: 40.6, nelng: -89.1},
+    'MT': {swlat: 44.3, swlng: -116.1, nelat: 49.0, nelng: -104.0},
+    'NE': {swlat: 40.0, swlng: -104.1, nelat: 43.0, nelng: -95.3},
+    'NV': {swlat: 35.0, swlng: -120.0, nelat: 42.0, nelng: -114.0},
+    'NH': {swlat: 42.7, swlng: -72.6, nelat: 45.3, nelng: -70.6},
+    'NJ': {swlat: 38.9, swlng: -75.6, nelat: 41.4, nelng: -73.9},
+    'NM': {swlat: 31.3, swlng: -109.1, nelat: 37.0, nelng: -103.0},
+    'NY': {swlat: 40.4, swlng: -79.8, nelat: 45.0, nelng: -71.8},
+    'NC': {swlat: 33.8, swlng: -84.3, nelat: 36.6, nelng: -75.4},
+    'ND': {swlat: 45.9, swlng: -104.1, nelat: 49.0, nelng: -96.6},
+    'OH': {swlat: 38.4, swlng: -84.8, nelat: 42.3, nelng: -80.5},
+    'OK': {swlat: 33.6, swlng: -103.0, nelat: 37.0, nelng: -94.4},
+    'OR': {swlat: 41.9, swlng: -124.6, nelat: 46.3, nelng: -116.5},
+    'PA': {swlat: 39.7, swlng: -80.5, nelat: 42.5, nelng: -74.7},
+    'RI': {swlat: 41.1, swlng: -71.9, nelat: 42.0, nelng: -71.1},
+    'SC': {swlat: 32.0, swlng: -83.4, nelat: 35.2, nelng: -78.5},
+    'SD': {swlat: 42.5, swlng: -104.1, nelat: 45.9, nelng: -96.4},
+    'TN': {swlat: 34.9, swlng: -90.3, nelat: 36.7, nelng: -81.6},
+    'TX': {swlat: 25.8, swlng: -106.6, nelat: 36.5, nelng: -93.5},
+    'UT': {swlat: 36.9, swlng: -114.1, nelat: 42.0, nelng: -109.0},
+    'VT': {swlat: 42.7, swlng: -73.4, nelat: 45.0, nelng: -71.5},
+    'VA': {swlat: 36.5, swlng: -83.7, nelat: 39.5, nelng: -75.2},
+    'WA': {swlat: 45.5, swlng: -124.8, nelat: 49.0, nelng: -116.9},
+    'WV': {swlat: 37.2, swlng: -82.6, nelat: 40.6, nelng: -77.7},
+    'WI': {swlat: 42.5, swlng: -92.9, nelat: 47.3, nelng: -86.2},
+    'WY': {swlat: 41.0, swlng: -111.1, nelat: 45.0, nelng: -104.0}
+};
+
+const REGION_BOUNDS = {
+    'global': null,
+    'northeast': {swlat: 39.7, swlng: -80.5, nelat: 47.5, nelng: -66.9},
+    'southeast': {swlat: 24.4, swlng: -88.5, nelat: 39.7, nelng: -75.4},
+    'midwest': {swlat: 36.9, swlng: -104.0, nelat: 49.4, nelng: -80.5},
+    'southwest': {swlat: 25.8, swlng: -125.0, nelat: 42.0, nelng: -93.5},
+    'west': {swlat: 32.5, swlng: -125.0, nelat: 49.0, nelng: -104.0},
+    'pacific': {swlat: 42.0, swlng: -125.0, nelat: 49.0, nelng: -116.9},
+    'canada': {swlat: 41.6, swlng: -141.0, nelat: 83.1, nelng: -52.6},
+    'uk': {swlat: 49.9, swlng: -10.7, nelat: 60.8, nelng: 1.8},
+    'australia': {swlat: -43.6, swlng: 113.3, nelat: -10.7, nelng: 153.6},
+    'europe': {swlat: 35.8, swlng: -10.7, nelat: 71.2, nelng: 40.2}
+};
+
+const API_CONFIG = {
+    BASE_URL: 'https://api.inaturalist.org/v1/observations',
+    PRELOAD_QUEUE_SIZE: 5,
+    MIN_QUESTIONS_PER_FETCH: 3,
+    PHOTOS_PER_PAGE: 50,
+    MAX_PAGES: 50
+};
+
+const DIFFICULTY_SETTINGS = {
+    easy: {
+        qualityGrade: 'needs_id,research',
+        popular: 'true',
+        useScientificNames: false,
+        requireSameFamily: false
+    },
+    medium: {
+        qualityGrade: 'needs_id,research',
+        popular: 'false',
+        useScientificNames: false,
+        requireSameFamily: true
+    },
+    hard: {
+        qualityGrade: 'research',
+        popular: 'false',
+        useScientificNames: true,
+        requireSameFamily: true
+    }
+};
+
+const SCORE_VALUES = {
+    CORRECT: 10,
+    STREAK_MULTIPLIER: 1
+};
+
+
+
+/**
+ * Service class for interacting with the iNaturalist API
+ */
+class INaturalistAPI {
+    /**
+     * Fetch species observations from iNaturalist API
+     * @param {string} category - Species category (birds, plants, etc.)
+     * @param {string} difficulty - Difficulty level (easy, medium, hard)
+     * @param {string} region - Geographic region or state code
+     * @returns {Promise<Array>} Array of observation objects
+     */
+    static async fetchObservations(category, difficulty, region) {
+        const taxonIds = TAXON_IDS[category];
+        const settings = DIFFICULTY_SETTINGS[difficulty];
+        const page = Math.floor(Math.random() * API_CONFIG.MAX_PAGES) + 1;
+        const bounds = US_STATE_BOUNDS[region] || REGION_BOUNDS[region];
+        
+        let url = `${API_CONFIG.BASE_URL}?quality_grade=${settings.qualityGrade}&popular=${settings.popular}&photos=true&per_page=${API_CONFIG.PHOTOS_PER_PAGE}&page=${page}&order=random&details=all`;
+        
+        if (taxonIds) {
+            url += '&' + taxonIds.map(id => `taxon_id=${id}`).join('&');
+        }
+        
+        if (bounds) {
+            url += `&swlat=${bounds.swlat}&swlng=${bounds.swlng}&nelat=${bounds.nelat}&nelng=${bounds.nelng}`;
+        }
+        
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                return data.results || [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching observations:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Fetch species from the same taxonomic group as the target species
+     * @param {Object} targetTaxon - The target taxon object
+     * @param {string} region - Geographic region
+     * @param {number} count - Number of related species to fetch
+     * @returns {Promise<Array>} Array of related observation objects
+     */
+    static async fetchRelatedSpecies(targetTaxon, region, count = 10) {
+        const bounds = US_STATE_BOUNDS[region] || REGION_BOUNDS[region];
+        
+        // Try to find species from same genus first, then family, then order
+        const taxonomicLevels = [
+            { level: 'genus', id: targetTaxon.genus_id },
+            { level: 'family', id: targetTaxon.family_id },
+            { level: 'order', id: targetTaxon.order_id }
+        ];
+
+        for (const { level, id } of taxonomicLevels) {
+            if (!id) continue;
+
+            let url = `${API_CONFIG.BASE_URL}?quality_grade=research&photos=true&per_page=50&taxon_id=${id}&order=random`;
+            
+            if (bounds) {
+                url += `&swlat=${bounds.swlat}&swlng=${bounds.swlng}&nelat=${bounds.nelat}&nelng=${bounds.nelng}`;
+            }
+
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    const results = data.results || [];
+                    
+                    // Filter out the target species and ensure we have common names
+                    const filtered = results.filter(obs => 
+                        obs.taxon && 
+                        obs.taxon.id !== targetTaxon.id &&
+                        obs.taxon.preferred_common_name &&
+                        obs.photos &&
+                        obs.photos.length > 0
+                    );
+
+                    if (filtered.length >= count) {
+                        return filtered.slice(0, count);
+                    }
+                }
+            } catch (error) {
+                console.error(`Error fetching ${level} species:`, error);
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * Validate if an observation has required data
+     * @param {Object} observation - Observation object to validate
+     * @returns {boolean} True if observation is valid
+     */
+    static isValidObservation(observation) {
+        return observation.taxon && 
+               observation.taxon.preferred_common_name && 
+               observation.taxon.name &&
+               observation.photos && 
+               observation.photos.length > 0;
+    }
+
+    /**
+     * Get taxonomy information for display
+     * @param {Object} taxon - Taxon object
+     * @returns {Object} Formatted taxonomy information
+     */
+    static getTaxonomyInfo(taxon) {
+        return {
+            scientificName: taxon.name,
+            commonName: taxon.preferred_common_name,
+            genus: taxon.genus || 'Unknown',
+            family: taxon.family || 'Unknown',
+            order: taxon.order || 'Unknown',
+            class: taxon.class || 'Unknown'
+        };
+    }
+}
+
+
+
+/**
+ * Handles generation of quiz questions from iNaturalist observations
+ */
+class QuestionGenerator {
+    constructor() {
+        this.usedSpecies = new Set();
+    }
+
+    /**
+     * Reset the used species cache
+     */
+    reset() {
+        this.usedSpecies.clear();
+    }
+
+    /**
+     * Process observations into quiz questions
+     * @param {Array} observations - Array of iNaturalist observations
+     * @param {string} difficulty - Difficulty level
+     * @param {string} region - Geographic region
+     * @returns {Promise<Array>} Array of question objects
+     */
+    async processObservations(observations, difficulty, region) {
+        let validObservations = observations.filter(obs => 
+            INaturalistAPI.isValidObservation(obs) &&
+            !this.usedSpecies.has(obs.taxon.id)
+        );
+        
+        // If we're running low on observations, clear the cache
+        if (validObservations.length < 8) {
+            this.reset();
+            validObservations = observations.filter(obs => 
+                INaturalistAPI.isValidObservation(obs)
+            );
+        }
+        
+        const questions = [];
+        const used = new Set();
+        
+        const maxQuestions = Math.min(3, Math.floor(validObservations.length / 4));
+        
+        for (let i = 0; i < maxQuestions; i++) {
+            const availableObs = validObservations.filter(obs => 
+                !used.has(obs.taxon.id) && !this.usedSpecies.has(obs.taxon.id)
+            );
+            
+            if (availableObs.length < 1) break;
+            
+            const correctObservation = availableObs[Math.floor(Math.random() * availableObs.length)];
+            used.add(correctObservation.taxon.id);
+            this.usedSpecies.add(correctObservation.taxon.id);
+            
+            let wrongObservations;
+            
+            // For medium and hard, try to get taxonomically related species
+            if (difficulty === 'medium' || difficulty === 'hard') {
+                wrongObservations = await this.getRelatedWrongOptions(
+                    correctObservation,
+                    availableObs,
+                    region,
+                    used
+                );
+            } else {
+                // Easy mode: any random species
+                wrongObservations = this.getRandomWrongOptions(
+                    correctObservation,
+                    availableObs,
+                    used
+                );
+            }
+            
+            if (wrongObservations.length === 3) {
+                wrongObservations.forEach(obs => used.add(obs.taxon.id));
+                questions.push({
+                    correct: correctObservation,
+                    options: this.shuffleArray([correctObservation, ...wrongObservations]),
+                    difficulty: difficulty
+                });
+            }
+        }
+        
+        return questions;
+    }
+
+    /**
+     * Get related species as wrong options for medium/hard difficulty
+     * @param {Object} correctObservation - The correct answer observation
+     * @param {Array} availableObs - Pool of available observations
+     * @param {string} region - Geographic region
+     * @param {Set} used - Set of already used taxon IDs
+     * @returns {Promise<Array>} Array of wrong option observations
+     */
+    async getRelatedWrongOptions(correctObservation, availableObs, region, used) {
+        const wrongObservations = [];
+        const targetTaxon = correctObservation.taxon;
+
+        // Strategy 1: Try to find same genus species from available observations
+        if (targetTaxon.genus) {
+            const genusMatches = availableObs.filter(obs => 
+                obs.taxon.id !== targetTaxon.id &&
+                obs.taxon.genus === targetTaxon.genus &&
+                !used.has(obs.taxon.id)
+            );
+            wrongObservations.push(...genusMatches);
+        }
+
+        // Strategy 2: If not enough, try same family from available observations
+        if (wrongObservations.length < 3 && targetTaxon.family) {
+            const familyMatches = availableObs.filter(obs => 
+                obs.taxon.id !== targetTaxon.id &&
+                obs.taxon.family === targetTaxon.family &&
+                !wrongObservations.find(w => w.taxon.id === obs.taxon.id) &&
+                !used.has(obs.taxon.id)
+            );
+            wrongObservations.push(...familyMatches);
+        }
+
+        // Strategy 3: If still not enough, fetch related species from API
+        if (wrongObservations.length < 3) {
+            const relatedSpecies = await INaturalistAPI.fetchRelatedSpecies(
+                targetTaxon,
+                region,
+                10
+            );
+            
+            const filtered = relatedSpecies.filter(obs =>
+                !wrongObservations.find(w => w.taxon.id === obs.taxon.id) &&
+                !used.has(obs.taxon.id)
+            );
+            
+            wrongObservations.push(...filtered);
+        }
+
+        // Strategy 4: Last resort - use any available species
+        if (wrongObservations.length < 3) {
+            const anySpecies = availableObs.filter(obs => 
+                obs.taxon.id !== targetTaxon.id &&
+                !wrongObservations.find(w => w.taxon.id === obs.taxon.id) &&
+                !used.has(obs.taxon.id)
+            );
+            wrongObservations.push(...anySpecies);
+        }
+
+        // Return exactly 3 options, shuffled
+        return this.shuffleArray(wrongObservations).slice(0, 3);
+    }
+
+    /**
+     * Get random species as wrong options for easy difficulty
+     * @param {Object} correctObservation - The correct answer observation
+     * @param {Array} availableObs - Pool of available observations
+     * @param {Set} used - Set of already used taxon IDs
+     * @returns {Array} Array of wrong option observations
+     */
+    getRandomWrongOptions(correctObservation, availableObs, used) {
+        const wrongObservations = availableObs.filter(obs => 
+            obs.taxon.id !== correctObservation.taxon.id &&
+            !used.has(obs.taxon.id)
+        );
+        
+        return this.shuffleArray(wrongObservations).slice(0, 3);
+    }
+
+    /**
+     * Shuffle an array using Fisher-Yates algorithm
+     * @param {Array} array - Array to shuffle
+     * @returns {Array} Shuffled array
+     */
+    shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+}
+
+
+
+/**
+ * Handles all UI rendering and updates
+ */
+class UIRenderer {
+    constructor(gameContent) {
+        this.gameContent = gameContent;
+    }
+
+    /**
+     * Render a quiz question
+     * @param {Object} question - Question object with correct answer and options
+     * @param {Function} onAnswer - Callback when user selects an answer
+     * @param {Function} onSkip - Callback when user skips
+     * @param {Function} onNext - Callback when user clicks next
+     * @param {Function} onImageClick - Callback when user clicks to zoom image
+     */
+    renderQuestion(question, onAnswer, onSkip, onNext, onImageClick) {
+        const { correct, options, difficulty } = question;
+        const url = correct.photos[0].url.replace('square', 'medium');
+        const useScientific = difficulty === 'hard';
+        
+        this.gameContent.innerHTML = `
+            <div class="image-container" id="imageContainer">
+                <img src="${url}" class="species-image" alt="Species to identify" />
+                <div class="zoom-icon">🔍</div>
+            </div>
+            <div class="next-button-container">
+                <button class="btn" id="nextBtn" style="display:none;">
+                    Next Question →
+                </button>
+            </div>
+            <div class="question">What species is this?</div>
+            <div class="options">
+                ${options.map((option, index) => 
+                    this.renderOption(option, index, useScientific)
+                ).join('')}
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <div class="species-info" id="speciesInfo" style="display:none;"></div>
+            <div class="controls">
+                <button class="btn skip" id="skipBtn">Skip</button>
+            </div>
+        `;
+
+        // Attach event listeners
+        document.getElementById('imageContainer').addEventListener('click', () => onImageClick(url));
+        document.getElementById('nextBtn').addEventListener('click', onNext);
+        document.getElementById('skipBtn').addEventListener('click', onSkip);
+        
+        options.forEach((option, index) => {
+            const optionElement = this.gameContent.querySelectorAll('.option')[index];
+            optionElement.addEventListener('click', () => onAnswer(index));
+        });
+    }
+
+    /**
+     * Render a single option button
+     * @param {Object} option - Option observation object
+     * @param {number} index - Option index
+     * @param {boolean} useScientific - Whether to show scientific names prominently
+     * @returns {string} HTML string for the option
+     */
+    renderOption(option, index, useScientific) {
+        const taxonomy = INaturalistAPI.getTaxonomyInfo(option.taxon);
+        
+        if (useScientific) {
+            // Hard mode: Scientific name prominent, common name revealed on answer
+            return `
+                <div class="option" data-index="${index}">
+                    <div class="scientific-name">
+                        <em>${taxonomy.scientificName}</em>
+                    </div>
+                    <div class="common-name">${taxonomy.commonName}</div>
+                </div>
+            `;
+        } else {
+            // Easy/Medium mode: Common name prominent, scientific name and taxonomy always shown
+            return `
+                <div class="option" data-index="${index}">
+                    <div style="font-size: 1.1em; margin-bottom: 5px;">
+                        ${taxonomy.commonName}
+                    </div>
+                    <div style="font-size: 0.85em; opacity: 0.85; font-style: italic;">
+                        <em>${taxonomy.scientificName}</em><br>
+                        <span style="font-style: normal;">${taxonomy.genus} • ${taxonomy.family}</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Show feedback after user answers or skips
+     * @param {boolean} isCorrect - Whether the answer was correct
+     * @param {boolean} isSkipped - Whether the question was skipped
+     * @param {string} correctName - Name of the correct species
+     */
+    showFeedback(isCorrect, isSkipped, correctName) {
+        const feedback = document.getElementById('feedback');
+        
+        if (isSkipped) {
+            feedback.innerHTML = `⏭️ Skipped. Answer: <strong>${correctName}</strong>`;
+            feedback.style.color = '#ffc107';
+        } else if (isCorrect) {
+            feedback.textContent = '✅ Correct!';
+            feedback.style.color = '#4CAF50';
+        } else {
+            feedback.innerHTML = `❌ Correct: <strong>${correctName}</strong>`;
+            feedback.style.color = '#f44336';
+        }
+    }
+
+    /**
+     * Highlight the correct and incorrect options
+     * @param {number} selectedIndex - Index of selected option (null if skipped)
+     * @param {number} correctIndex - Index of correct option
+     */
+    highlightOptions(selectedIndex, correctIndex) {
+        const options = this.gameContent.querySelectorAll('.option');
+        
+        options.forEach(option => {
+            option.classList.add('disabled');
+            option.classList.add('revealed');
+        });
+        
+        if (selectedIndex !== null && selectedIndex !== correctIndex) {
+            options[selectedIndex].classList.add('incorrect');
+        }
+        
+        options[correctIndex].classList.add('correct');
+    }
+
+    /**
+     * Show/hide control buttons
+     * @param {boolean} showNext - Whether to show next button
+     * @param {boolean} showSkip - Whether to show skip button
+     */
+    toggleButtons(showNext, showSkip) {
+        const nextBtn = document.getElementById('nextBtn');
+        const skipBtn = document.getElementById('skipBtn');
+        
+        if (nextBtn) nextBtn.style.display = showNext ? 'block' : 'none';
+        if (skipBtn) skipBtn.style.display = showSkip ? 'block' : 'none';
+    }
+
+    /**
+     * Update score display
+     * @param {Object} scores - Object containing score, streak, total
+     */
+    updateScore(scores) {
+        document.getElementById('score').textContent = scores.score;
+        document.getElementById('streak').textContent = scores.streak;
+        document.getElementById('total').textContent = scores.total;
+        
+        const accuracy = scores.total > 0 ? (scores.score / (scores.total * 10)) * 100 : 0;
+        document.getElementById('progressFill').style.width = `${accuracy}%`;
+    }
+
+    /**
+     * Update diversity metrics display
+     * @param {number} speciesSeen - Number of unique species encountered
+     * @param {number} speciesLearned - Number of species correctly identified
+     */
+    updateDiversity(speciesSeen, speciesLearned) {
+        document.getElementById('speciesSeen').textContent = speciesSeen;
+        document.getElementById('speciesLearned').textContent = speciesLearned;
+    }
+
+    /**
+     * Show loading state
+     */
+    showLoading() {
+        this.gameContent.innerHTML = '<div class="loading">Loading nature data...</div>';
+    }
+
+    /**
+     * Show error state
+     * @param {string} message - Error message to display
+     */
+    showError(message) {
+        this.gameContent.innerHTML = `<div class="loading">⚠️ ${message}</div>`;
+    }
+}
+
+
+/**
+ * Handles the image zoom modal functionality
+ */
+class ModalHandler {
+    constructor() {
+        this.modal = document.getElementById('imageModal');
+        this.modalImage = document.getElementById('modalImage');
+        this.modalImageContainer = document.getElementById('modalImageContainer');
+        this.currentZoom = 1;
+        this.isDragging = false;
+        this.startX = 0;
+        this.startY = 0;
+        this.scrollLeft = 0;
+        this.scrollTop = 0;
+
+        this.initEventListeners();
+    }
+
+    /**
+     * Initialize event listeners for modal controls
+     */
+    initEventListeners() {
+        // Close button
+        document.getElementById('modalClose').addEventListener('click', () => this.close());
+
+        // Zoom controls
+        document.getElementById('zoomIn').addEventListener('click', () => this.zoomIn());
+        document.getElementById('zoomOut').addEventListener('click', () => this.zoomOut());
+        document.getElementById('zoomReset').addEventListener('click', () => this.resetZoom());
+
+        // Close on background click
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.close();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (this.modal.style.display === 'flex') {
+                if (e.key === 'Escape') this.close();
+                if (e.key === '+' || e.key === '=') this.zoomIn();
+                if (e.key === '-' || e.key === '_') this.zoomOut();
+                if (e.key === '0') this.resetZoom();
+            }
+        });
+
+        // Scroll to zoom
+        this.modalImageContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                this.zoomIn();
+            } else {
+                this.zoomOut();
+            }
+        }, { passive: false });
+
+        // Drag to pan
+        this.initDragToPan();
+    }
+
+    /**
+     * Initialize drag-to-pan functionality
+     */
+    initDragToPan() {
+        this.modalImageContainer.addEventListener('mousedown', (e) => {
+            this.isDragging = true;
+            this.startX = e.pageX - this.modalImageContainer.offsetLeft;
+            this.startY = e.pageY - this.modalImageContainer.offsetTop;
+            this.scrollLeft = this.modalImageContainer.scrollLeft;
+            this.scrollTop = this.modalImageContainer.scrollTop;
+        });
+
+        this.modalImageContainer.addEventListener('mouseleave', () => {
+            this.isDragging = false;
+        });
+
+        this.modalImageContainer.addEventListener('mouseup', () => {
+            this.isDragging = false;
+        });
+
+        this.modalImageContainer.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - this.modalImageContainer.offsetLeft;
+            const y = e.pageY - this.modalImageContainer.offsetTop;
+            const walkX = (x - this.startX) * 2;
+            const walkY = (y - this.startY) * 2;
+            this.modalImageContainer.scrollLeft = this.scrollLeft - walkX;
+            this.modalImageContainer.scrollTop = this.scrollTop - walkY;
+        });
+
+        // Touch support for mobile
+        this.modalImageContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                this.isDragging = true;
+                this.startX = e.touches[0].pageX - this.modalImageContainer.offsetLeft;
+                this.startY = e.touches[0].pageY - this.modalImageContainer.offsetTop;
+                this.scrollLeft = this.modalImageContainer.scrollLeft;
+                this.scrollTop = this.modalImageContainer.scrollTop;
+            }
+        });
+
+        this.modalImageContainer.addEventListener('touchend', () => {
+            this.isDragging = false;
+        });
+
+        this.modalImageContainer.addEventListener('touchmove', (e) => {
+            if (!this.isDragging || e.touches.length !== 1) return;
+            e.preventDefault();
+            const x = e.touches[0].pageX - this.modalImageContainer.offsetLeft;
+            const y = e.touches[0].pageY - this.modalImageContainer.offsetTop;
+            const walkX = (x - this.startX) * 2;
+            const walkY = (y - this.startY) * 2;
+            this.modalImageContainer.scrollLeft = this.scrollLeft - walkX;
+            this.modalImageContainer.scrollTop = this.scrollTop - walkY;
+        });
+    }
+
+    /**
+     * Open modal with specified image
+     * @param {string} imageUrl - URL of image to display
+     */
+    open(imageUrl) {
+        this.modalImage.src = imageUrl.replace('medium', 'large');
+        this.modal.style.display = 'flex';
+        this.currentZoom = 1;
+        this.modalImage.style.transform = 'scale(1)';
+    }
+
+    /**
+     * Close modal
+     */
+    close() {
+        this.modal.style.display = 'none';
+        this.resetZoom();
+    }
+
+    /**
+     * Zoom in on image
+     */
+    zoomIn() {
+        this.currentZoom = Math.min(5, this.currentZoom + 0.25);
+        this.modalImage.style.transform = `scale(${this.currentZoom})`;
+    }
+
+    /**
+     * Zoom out on image
+     */
+    zoomOut() {
+        this.currentZoom = Math.max(0.5, this.currentZoom - 0.25);
+        this.modalImage.style.transform = `scale(${this.currentZoom})`;
+    }
+
+    /**
+     * Reset zoom to default
+     */
+    resetZoom() {
+        this.currentZoom = 1;
+        this.modalImage.style.transform = 'scale(1)';
+        this.modalImageContainer.scrollLeft = 0;
+        this.modalImageContainer.scrollTop = 0;
+    }
+}
+
+
+
+/**
+ * Main game controller class
+ */
+class NatureGame {
+    constructor() {
+        // Game state
+        this.score = 0;
+        this.streak = 0;
+        this.total = 0;
+        this.currentQuestion = null;
+        this.questionQueue = [];
+        
+        // Diversity tracking
+        this.speciesEncountered = new Set();
+        this.speciesCorrect = new Set();
+        
+        // Components
+        this.questionGenerator = new QuestionGenerator();
+        this.uiRenderer = new UIRenderer(document.getElementById('gameContent'));
+        this.modalHandler = new ModalHandler();
+        
+        // DOM elements
+        this.categorySelect = document.getElementById('categorySelect');
+        this.difficultySelect = document.getElementById('difficultySelect');
+        this.regionSelect = document.getElementById('regionSelect');
+        
+        this.init();
+    }
+
+    /**
+     * Initialize the game
+     */
+    async init() {
+        // Add event listeners for settings changes
+        [this.categorySelect, this.difficultySelect, this.regionSelect].forEach(select => {
+            select.addEventListener('change', () => this.handleSettingsChange());
+        });
+
+        // Load initial questions
+        await this.preloadQuestions();
+        this.loadNextQuestion();
+    }
+
+    /**
+     * Handle changes to game settings
+     */
+    async handleSettingsChange() {
+        this.questionGenerator.reset();
+        this.questionQueue = [];
+        this.uiRenderer.showLoading();
+        await this.preloadQuestions();
+        this.loadNextQuestion();
+    }
+
+    /**
+     * Preload questions into the queue
+     */
+    async preloadQuestions() {
+        while (this.questionQueue.length < API_CONFIG.PRELOAD_QUEUE_SIZE) {
+            const observations = await INaturalistAPI.fetchObservations(
+                this.categorySelect.value,
+                this.difficultySelect.value,
+                this.regionSelect.value
+            );
+
+            if (observations && observations.length > 0) {
+                const questions = await this.questionGenerator.processObservations(
+                    observations,
+                    this.difficultySelect.value,
+                    this.regionSelect.value
+                );
+                this.questionQueue.push(...questions);
+            } else {
+                break;
+            }
+
+            // Ensure we have at least some questions
+            if (this.questionQueue.length >= API_CONFIG.MIN_QUESTIONS_PER_FETCH) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Load and display the next question
+     */
+    async loadNextQuestion() {
+        // Preload more questions if running low
+        if (this.questionQueue.length < 2) {
+            this.preloadQuestions();
+        }
+
+        if (this.questionQueue.length > 0) {
+            this.currentQuestion = this.questionQueue.shift();
+            this.trackSpeciesEncountered(this.currentQuestion.correct.taxon.id);
+            
+            this.uiRenderer.renderQuestion(
+                this.currentQuestion,
+                (index) => this.handleAnswer(index),
+                () => this.handleSkip(),
+                () => this.loadNextQuestion(),
+                (url) => this.modalHandler.open(url)
+            );
+        } else {
+            this.uiRenderer.showError('No questions available. Try different settings.');
+        }
+    }
+
+    /**
+     * Handle user answer selection
+     * @param {number} selectedIndex - Index of selected option
+     */
+    handleAnswer(selectedIndex) {
+        const correctIndex = this.currentQuestion.options.findIndex(
+            option => option.taxon.id === this.currentQuestion.correct.taxon.id
+        );
+
+        const isCorrect = selectedIndex === correctIndex;
+
+        // Update score
+        if (isCorrect) {
+            this.score += SCORE_VALUES.CORRECT;
+            this.streak += 1;
+            this.trackSpeciesLearned(this.currentQuestion.correct.taxon.id);
+        } else {
+            this.streak = 0;
+        }
+
+        this.total += 1;
+
+        // Update UI
+        this.uiRenderer.highlightOptions(selectedIndex, correctIndex);
+        this.uiRenderer.showFeedback(
+            isCorrect,
+            false,
+            this.currentQuestion.correct.taxon.preferred_common_name
+        );
+        this.uiRenderer.toggleButtons(true, false);
+        this.updateAllScores();
+    }
+
+    /**
+     * Handle skip action
+     */
+    handleSkip() {
+        const correctIndex = this.currentQuestion.options.findIndex(
+            option => option.taxon.id === this.currentQuestion.correct.taxon.id
+        );
+
+        this.total += 1;
+        this.streak = 0;
+
+        // Update UI
+        this.uiRenderer.highlightOptions(null, correctIndex);
+        this.uiRenderer.showFeedback(
+            false,
+            true,
+            this.currentQuestion.correct.taxon.preferred_common_name
+        );
+        this.uiRenderer.toggleButtons(true, false);
+        this.updateAllScores();
+    }
+
+    /**
+     * Track a species as encountered
+     * @param {number} taxonId - Taxon ID to track
+     */
+    trackSpeciesEncountered(taxonId) {
+        this.speciesEncountered.add(taxonId);
+        this.updateDiversityMetrics();
+    }
+
+    /**
+     * Track a species as correctly identified
+     * @param {number} taxonId - Taxon ID to track
+     */
+    trackSpeciesLearned(taxonId) {
+        this.speciesCorrect.add(taxonId);
+        this.updateDiversityMetrics();
+    }
+
+    /**
+     * Update all score displays
+     */
+    updateAllScores() {
+        this.uiRenderer.updateScore({
+            score: this.score,
+            streak: this.streak,
+            total: this.total
+        });
+    }
+
+    /**
+     * Update diversity metrics display
+     */
+    updateDiversityMetrics() {
+        this.uiRenderer.updateDiversity(
+            this.speciesEncountered.size,
+            this.speciesCorrect.size
+        );
+    }
+}
+
+
+
+/**
+ * Main entry point for the Nature ID Game
+ * Initializes the game when DOM is ready
+ */
+
+// Wait for DOM to be fully loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGame);
+} else {
+    initGame();
+}
+
+/**
+ * Initialize the game
+ */
+function initGame() {
+    try {
+        // Create and start the game
+        window.game = new NatureGame();
+        console.log('Nature ID Game initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize game:', error);
+        
+        // Show error to user
+        const gameContent = document.getElementById('gameContent');
+        if (gameContent) {
+            gameContent.innerHTML = `
+                <div class="loading">
+                    ⚠️ Failed to initialize game. Please refresh the page.
+                    <br><br>
+                    <small>Error: ${error.message}</small>
+                </div>
+            `;
+        }
+    }
+}
+
+// Export for potential use in console debugging
+
+
+    </script>
 </body>
 </html>
