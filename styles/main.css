@@ -1,0 +1,146 @@
+:root {
+    --bg: #f4f1ec;
+    --bg-card: #ffffff;
+    --text: #263238;
+    --text-mid: #546e7a;
+    --text-light: #90a4ae;
+    --primary: #2e7d32;
+    --primary-dark: #1b5e20;
+    --primary-light: #e8f5e9;
+    --accent: #e8a817;
+    --accent-light: #fff8e1;
+    --success: #43a047;
+    --success-light: #e8f5e9;
+    --error: #e53935;
+    --error-light: #ffebee;
+    --border: #e0ddd6;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { height: 100%; }
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100%;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+#app {
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header ── */
+.app-header {
+    padding: 20px 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.app-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    flex: 1;
+}
+.app-header .subtitle {
+    font-size: 0.82rem;
+    color: var(--text-mid);
+    font-weight: 400;
+}
+.back-btn {
+    background: var(--primary-light);
+    border: none;
+    border-radius: 50%;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--primary);
+    font-size: 1.2rem;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+.back-btn:hover { background: #c8e6c9; }
+
+/* ── Stats Bar ── */
+.stats-bar {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+}
+.stat-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+}
+.stat-chip .num { font-weight: 700; color: var(--primary); }
+
+/* ── Section Title ── */
+.section-title {
+    padding: 8px 20px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-light);
+}
+
+/* ── Loading ── */
+.loading-view {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 40px;
+    text-align: center;
+    gap: 20px;
+}
+.spinner {
+    width: 48px; height: 48px;
+    border: 4px solid var(--primary-light);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-view p { color: var(--text-mid); font-size: 0.95rem; }
+
+/* ── Error ── */
+.error-view {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-mid);
+}
+.error-view .error-icon { font-size: 3rem; margin-bottom: 16px; }
+.error-view p { margin-bottom: 16px; }
+.retry-btn {
+    padding: 10px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* ── Utility ── */
+.hidden { display: none !important; }
+
+@media (max-width: 400px) {
+    .summary-stats { grid-template-columns: 1fr 1fr; }
+}
