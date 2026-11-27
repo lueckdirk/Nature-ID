@@ -7,6 +7,9 @@ import { Store } from './store.js';
 import { API_CONFIG, PRESET_DECKS, SCORE_VALUES,
     DRIFTLESS_TREE_GENERA, DRIFTLESS_SHRUB_GENERA, WI_NR40_INVASIVES, WIDNR_FACT_URL } from './config.js';
 
+// Bump when species data schema changes to invalidate cached data
+const CACHE_VERSION = 3;
+
 /**
  * Main application controller — manages views, decks, sessions, and classic mode
  */
@@ -65,6 +68,7 @@ export class NatureGame {
             case 'deckDetail': this.ui.renderDeckDetail(s.activeDeck); break;
             case 'loading': this.ui.renderLoading(); break;
             case 'session': this.ui.renderSession(s); break;
+            case 'browse': this.ui.renderBrowse(s); break;
             case 'summary': this.ui.renderSummary(s); break;
             case 'error': this.ui.renderError(s.errorMessage); break;
             case 'classic': /* handled separately */ break;
@@ -173,6 +177,23 @@ export class NatureGame {
                 this.deleteDeck(target.dataset.deckId);
                 break;
 
+            // Browse mode
+            case 'startBrowse':
+                this.startBrowse();
+                break;
+            case 'browseFilter':
+                this.setState({ browseFilter: target.dataset.filter, browseSelected: null });
+                break;
+            case 'browseSelect':
+                this.setState({ browseSelected: parseInt(target.dataset.speciesId) });
+                break;
+            case 'browseBack':
+                this.setState({ browseSelected: null });
+                break;
+            case 'goBackFromBrowse':
+                this.setState({ view: 'deckDetail', browseSpecies: null, browseFilter: 'all', browseSelected: null });
+                break;
+
             // Classic mode
             case 'classicAnswer':
                 this.handleClassicAnswer(parseInt(target.dataset.index));
@@ -231,6 +252,61 @@ export class NatureGame {
         this.setState({ view: 'deckDetail', activeDeck: deck });
     }
 
+    async startBrowse() {
+        const deck = this.state.activeDeck;
+        if (!deck) return;
+
+        // Check if species are already cached
+        const cache = Store.getSpeciesCache(deck.id);
+        const cacheAge = cache ? Date.now() - cache.ts : Infinity;
+
+        if (cache && cacheAge < API_CONFIG.CACHE_TTL && cache.version === CACHE_VERSION && cache.species.length > 0) {
+            this.setState({ view: 'browse', browseSpecies: cache.species, browseFilter: 'all', browseSelected: null });
+        } else {
+            // Need to fetch — show loading, then switch to browse when done
+            this.setState({ view: 'loading' });
+            try {
+                let results;
+                if (deck.source === 'tree_genera') {
+                    results = await INaturalistAPI.multiGenusSpeciesCounts(DRIFTLESS_TREE_GENERA, deck.query);
+                } else if (deck.source === 'shrub_genera') {
+                    results = await INaturalistAPI.multiGenusSpeciesCounts(DRIFTLESS_SHRUB_GENERA, deck.query);
+                } else if (deck.source === 'nr40') {
+                    results = await INaturalistAPI.fetchNR40Species(deck.query);
+                } else {
+                    results = await INaturalistAPI.speciesCounts(deck.query);
+                }
+
+                let introducedIds = null;
+                if (deck.establishment === 'introduced') {
+                    introducedIds = null;
+                } else if (deck.query.place_id) {
+                    introducedIds = await INaturalistAPI.fetchIntroducedIds(deck.query.place_id);
+                }
+
+                const species = results
+                    .filter(r => r.taxon && r.taxon.default_photo && r.taxon.preferred_common_name)
+                    .map(r => ({
+                        id: r.taxon.id,
+                        sciName: r.taxon.name,
+                        commonName: r.taxon.preferred_common_name,
+                        defaultPhoto: INaturalistAPI.getPhotoUrl(r.taxon),
+                        obsCount: r.count,
+                        introduced: deck.establishment === 'introduced' ? true :
+                            (introducedIds ? introducedIds.has(r.taxon.id) : false),
+                        iconic: r.taxon.iconic_taxon_name,
+                        wikipediaUrl: r.taxon.wikipedia_url,
+                        nr40: r.taxon._nr40 || null,
+                    }));
+
+                Store.saveSpeciesCache(deck.id, species, CACHE_VERSION);
+                this.setState({ view: 'browse', browseSpecies: species, browseFilter: 'all', browseSelected: null });
+            } catch (err) {
+                this.setState({ view: 'error', errorMessage: `Failed to load species: ${err.message}` });
+            }
+        }
+    }
+
     async startSession(mode) {
         const deck = this.state.activeDeck;
         if (!deck) return;
@@ -241,9 +317,6 @@ export class NatureGame {
             const cache = Store.getSpeciesCache(deck.id);
             const cacheAge = cache ? Date.now() - cache.ts : Infinity;
 
-            // Cache version 2: invalidates old caches that may contain wrong species
-            // (prior version had hardcoded wrong genus IDs returning insects/arachnids)
-            const CACHE_VERSION = 3;
             if (cache && cacheAge < API_CONFIG.CACHE_TTL && cache.version === CACHE_VERSION) {
                 species = cache.species;
             } else {

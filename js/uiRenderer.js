@@ -124,6 +124,13 @@ export class UIRenderer {
                             <p>Flashcards — learn species at your own pace</p>
                         </div>
                     </div>
+                    <div class="mode-btn" data-action="startBrowse">
+                        <span class="mode-icon">📋</span>
+                        <div class="mode-info">
+                            <h3>Browse List</h3>
+                            <p>View all species — see strengths, weaknesses & details</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="session-settings">
                     <label>Cards per session</label>
@@ -387,6 +394,213 @@ export class UIRenderer {
     // ══════════════════════════════════════
     // SESSION SUMMARY
     // ══════════════════════════════════════
+    // ══════════════════════════════════════
+    // BROWSE VIEW — Full species list with mastery & detail
+    // ══════════════════════════════════════
+    renderBrowse(state) {
+        const { activeDeck, browseFilter, browseSpecies, browseSelected } = state;
+        const sr = Store.getSR();
+
+        // Classify each species by mastery
+        const classified = (browseSpecies || []).map(sp => {
+            const d = sr[sp.id];
+            let level = 'unseen';
+            if (d) {
+                if (d.box >= 4) level = 'strong';
+                else if (d.box >= 2) level = 'learning';
+                else level = 'weak';
+            }
+            return { ...sp, level, box: d?.box ?? -1, correct: d?.correct ?? 0, incorrect: d?.incorrect ?? 0 };
+        });
+
+        // Filter
+        const filter = browseFilter || 'all';
+        const filtered = filter === 'all' ? classified :
+            classified.filter(sp => sp.level === filter);
+
+        // Sort: unseen first, then weak, learning, strong; alpha within
+        const levelOrder = { unseen: 0, weak: 1, learning: 2, strong: 3 };
+        filtered.sort((a, b) => levelOrder[a.level] - levelOrder[b.level] || a.commonName.localeCompare(b.commonName));
+
+        // Counts for filter chips
+        const counts = { all: classified.length, unseen: 0, weak: 0, learning: 0, strong: 0 };
+        for (const sp of classified) counts[sp.level]++;
+
+        // If a species is selected, render detail view
+        if (browseSelected) {
+            const sp = classified.find(s => s.id === browseSelected);
+            if (sp) {
+                this._renderBrowseDetail(sp, activeDeck);
+                return;
+            }
+        }
+
+        this.app.innerHTML = `
+            <div class="app-header">
+                <button class="back-btn" data-action="goBackFromBrowse">←</button>
+                <h1>📋 ${activeDeck?.name || 'Species List'}</h1>
+            </div>
+            <div class="browse-view">
+                <div class="browse-filters">
+                    <button class="filter-chip ${filter === 'all' ? 'active' : ''}" data-action="browseFilter" data-filter="all">
+                        All <span class="chip-count">${counts.all}</span>
+                    </button>
+                    <button class="filter-chip ${filter === 'unseen' ? 'active' : ''}" data-action="browseFilter" data-filter="unseen">
+                        🆕 Unseen <span class="chip-count">${counts.unseen}</span>
+                    </button>
+                    <button class="filter-chip ${filter === 'weak' ? 'active' : ''}" data-action="browseFilter" data-filter="weak">
+                        🔴 Weak <span class="chip-count">${counts.weak}</span>
+                    </button>
+                    <button class="filter-chip ${filter === 'learning' ? 'active' : ''}" data-action="browseFilter" data-filter="learning">
+                        🟡 Learning <span class="chip-count">${counts.learning}</span>
+                    </button>
+                    <button class="filter-chip ${filter === 'strong' ? 'active' : ''}" data-action="browseFilter" data-filter="strong">
+                        🟢 Strong <span class="chip-count">${counts.strong}</span>
+                    </button>
+                </div>
+                ${filtered.length === 0 ? `
+                    <div class="browse-empty">
+                        <p>No species match this filter yet.</p>
+                        <p style="font-size:0.85rem;color:var(--text-mid)">Study some cards first to build your mastery data!</p>
+                    </div>
+                ` : `
+                    <div class="browse-grid">
+                        ${filtered.map(sp => `
+                            <div class="browse-card mastery-${sp.level}" data-action="browseSelect" data-species-id="${sp.id}">
+                                <div class="browse-thumb-wrap">
+                                    <img class="browse-thumb" src="${sp.defaultPhoto || ''}" alt="${sp.commonName}" loading="lazy" onerror="this.style.display='none'" />
+                                    <span class="browse-mastery-dot mastery-dot-${sp.level}"></span>
+                                </div>
+                                <div class="browse-names">
+                                    <div class="browse-common">${sp.commonName}</div>
+                                    <div class="browse-sci">${sp.sciName}</div>
+                                </div>
+                                ${sp.introduced ? '<span class="browse-badge intro">Introduced</span>' : ''}
+                                ${this._lookupNR40(sp.sciName) ? '<span class="browse-badge nr40">NR40</span>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            </div>
+        `;
+    }
+
+    _renderBrowseDetail(sp, deck) {
+        const nr40 = sp.nr40 || this._lookupNR40(sp.sciName);
+        const sr = Store.getSR();
+        const srData = sr[sp.id];
+        const boxLabel = SpacedRepetition.getBoxLabel(srData?.box);
+        const isIntro = sp.introduced;
+
+        let nr40Html = '';
+        if (nr40) {
+            nr40Html = `
+                <div class="info-nr40">
+                    <span class="info-tag nr40-status nr40-${nr40.status.toLowerCase().replace('*', '')}">
+                        🚫 WI NR40: ${nr40.status === 'Prohibited*' ? 'Prohibited/Restricted' : nr40.status}
+                    </span>
+                    ${nr40.dnrFact ? `
+                        <a class="info-link compact" href="${WIDNR_FACT_URL}${nr40.dnrFact}.html" target="_blank" rel="noopener">
+                            📋 WIDNR Fact Sheet →
+                        </a>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        this.app.innerHTML = `
+            <div class="app-header">
+                <button class="back-btn" data-action="browseBack">←</button>
+                <h1>${sp.commonName}</h1>
+            </div>
+            <div class="browse-detail">
+                <div class="detail-hero">
+                    <img class="detail-photo" src="${sp.defaultPhoto || ''}" alt="${sp.commonName}" data-action="zoomImage" data-url="${sp.defaultPhoto || ''}" />
+                </div>
+                <div class="detail-photo-strip" id="browsePhotoStrip">
+                    <div class="photo-strip-loading">Loading more photos...</div>
+                </div>
+                <div class="detail-body">
+                    <h2 class="detail-common">${sp.commonName}</h2>
+                    <div class="detail-sci">${sp.sciName}</div>
+
+                    <div class="detail-tags">
+                        <span class="info-tag ${isIntro ? 'introduced' : 'native'}">${isIntro ? '⚠️ Introduced' : '🏠 Native'}</span>
+                        <span class="info-tag obs-count">📊 ${sp.obsCount?.toLocaleString() || '?'} observations</span>
+                        <span class="info-tag box-tag mastery-tag-${sp.level}">
+                            ${sp.level === 'unseen' ? '🆕' : sp.level === 'weak' ? '🔴' : sp.level === 'learning' ? '🟡' : '🟢'} ${boxLabel}
+                        </span>
+                    </div>
+
+                    ${srData ? `
+                        <div class="detail-stats">
+                            <div class="detail-stat">
+                                <div class="val">${srData.correct || 0}</div>
+                                <div class="label">Correct</div>
+                            </div>
+                            <div class="detail-stat">
+                                <div class="val">${srData.incorrect || 0}</div>
+                                <div class="label">Incorrect</div>
+                            </div>
+                            <div class="detail-stat">
+                                <div class="val">${srData.box || 0}/5</div>
+                                <div class="label">Box</div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="detail-stats-empty">You haven't studied this species yet — it will appear in your next session.</div>
+                    `}
+
+                    ${nr40Html}
+
+                    <div class="info-links">
+                        <div class="info-links-title">Learn More</div>
+                        <a class="info-link" href="https://www.inaturalist.org/taxa/${sp.id}" target="_blank" rel="noopener">
+                            🌿 iNaturalist →
+                        </a>
+                        ${sp.wikipediaUrl ? `
+                            <a class="info-link" href="${sp.wikipediaUrl}" target="_blank" rel="noopener">
+                                📖 Wikipedia →
+                            </a>
+                        ` : ''}
+                        ${isIntro ? `
+                            <a class="info-link" href="https://www.invasive.org/browse/subinfo.cfm?sub=${encodeURIComponent(sp.sciName)}" target="_blank" rel="noopener">
+                                🔍 Invasive.org →
+                            </a>
+                        ` : ''}
+                        <a class="info-link" href="https://www.inaturalist.org/taxa/${sp.id}/browse_photos" target="_blank" rel="noopener">
+                            📸 More Photos on iNat →
+                        </a>
+                    </div>
+                    <div id="taxon-links-extra"></div>
+                </div>
+            </div>
+        `;
+
+        // Lazy-load photo strip and external links
+        this._loadBrowsePhotoStrip(sp.id, deck?.query?.place_id);
+        this._fetchAndAppendTaxonLinks(sp.id);
+    }
+
+    async _loadBrowsePhotoStrip(taxonId, placeId) {
+        try {
+            const photos = await INaturalistAPI.getObservationPhotos(taxonId, placeId, 12);
+            const strip = document.getElementById('browsePhotoStrip');
+            if (!strip) return;
+            if (photos.length === 0) {
+                strip.innerHTML = '';
+                return;
+            }
+            strip.innerHTML = photos.map(url => `
+                <img class="strip-photo" src="${url}" alt="observation photo" loading="lazy"
+                     data-action="zoomImage" data-url="${url}" onerror="this.remove()" />
+            `).join('');
+        } catch {
+            const strip = document.getElementById('browsePhotoStrip');
+            if (strip) strip.innerHTML = '';
+        }
+    }
+
     renderSummary(state) {
         const totalCards = state.sessionCards.length;
         const pct = totalCards > 0 ? Math.round((state.sessionScore / totalCards) * 100) : 0;
