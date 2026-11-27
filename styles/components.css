@@ -370,6 +370,21 @@
 .info-links .info-link {
     display: block; margin-bottom: 6px; font-size: 0.82rem;
 }
+.next-btn-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(transparent, var(--bg) 25%);
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+}
+.next-btn-wrap .next-btn {
+    max-width: 520px;
+    width: 100%;
+}
 .next-btn {
     width: 100%;
     padding: 14px;
@@ -383,6 +398,9 @@
     transition: var(--transition);
 }
 .next-btn:hover { background: var(--primary-dark); }
+
+/* Reserve space at the bottom so content isn't hidden behind the fixed button */
+.session-view { padding-bottom: 80px !important; }
 
 /* ══════════════════════════════════════
    SESSION SUMMARY
