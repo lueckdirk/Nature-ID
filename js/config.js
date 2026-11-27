@@ -122,85 +122,122 @@ export const SR_INTERVALS = [0, 1, 3, 7, 14, 30]; // days per box
 export const BOX_LABELS = ['New', 'Learning', 'Reviewing', 'Familiar', 'Confident', 'Mastered'];
 export const DEFAULT_SESSION_SIZE = 15;
 
-// ── Driftless Area tree genus taxon IDs ──
-// These are genus-level IDs on iNaturalist — each returns all species under that genus
-export const DRIFTLESS_TREE_GENERA = {
+// ── Driftless Area tree genera (by scientific name) ──
+// Resolved to iNaturalist taxon IDs at runtime via taxa/autocomplete API
+// This avoids hardcoding IDs which can be wrong
+export const DRIFTLESS_TREE_GENERA = [
     // Hardwoods
-    47882: 'Quercus',       // Oaks
-    48912: 'Carya',         // Hickories
-    47727: 'Acer',          // Maples
-    49795: 'Fraxinus',      // Ashes
-    54777: 'Ulmus',         // Elms
-    48091: 'Tilia',         // Basswood/Linden
-    53718: 'Betula',        // Birches
-    48885: 'Juglans',       // Walnuts
-    47351: 'Prunus',        // Cherries/Plums (trees)
-    56095: 'Ostrya',        // Ironwood/Hop-hornbeam
-    53548: 'Celtis',        // Hackberries
-    47572: 'Populus',       // Poplars/Aspens/Cottonwoods
-    53453: 'Salix',         // Willows (many are shrubs)
-    48502: 'Gleditsia',     // Honeylocust
-    48818: 'Robinia',       // Black locust (invasive!)
-    47451: 'Cornus',        // Dogwoods (some trees)
+    'Quercus',       // Oaks
+    'Carya',         // Hickories
+    'Acer',          // Maples
+    'Fraxinus',      // Ashes
+    'Ulmus',         // Elms
+    'Tilia',         // Basswood/Linden
+    'Betula',        // Birches
+    'Juglans',       // Walnuts
+    'Prunus',        // Cherries/Plums (tree species)
+    'Ostrya',        // Ironwood/Hop-hornbeam
+    'Celtis',        // Hackberries
+    'Populus',       // Poplars/Aspens/Cottonwoods
+    'Gleditsia',     // Honeylocust
+    'Robinia',       // Black Locust (invasive!)
+    'Cornus',        // Dogwoods
     // Conifers
-    47561: 'Pinus',         // Pines
-    47370: 'Juniperus',     // Eastern red cedar, juniper
-    47389: 'Tsuga',         // Hemlock
-};
+    'Pinus',         // Pines
+    'Juniperus',     // Eastern red cedar, juniper
+    'Tsuga',         // Hemlock
+    'Abies',         // Firs
+];
 
-// ── Driftless Area shrub genus taxon IDs ──
-export const DRIFTLESS_SHRUB_GENERA = {
-    48091: 'Tilia',         // Some Tilia are shrubby
-    47451: 'Cornus',        // Dogwoods (shrub species)
-    48532: 'Viburnum',      // Viburnums
-    48684: 'Rubus',         // Raspberries/blackberries
-    49038: 'Ribes',         // Gooseberries/currants
-    50180: 'Rhus',          // Sumacs
-    48885: 'Juglans',       // (some)
-    47776: 'Rosa',          // Roses
-    48501: 'Lonicera',      // Honeysuckles (many invasive!)
-    49038: 'Ribes',         // Gooseberries/currants
-    52878: 'Sambucus',      // Elderberries
-    55995: 'Rhamnus',       // Buckthorns (invasive!)
-    56058: 'Euonymus',      // Burning bush (invasive!)
-    47320: 'Berberis',      // Barberry (invasive!)
-    68408: 'Elaeagnus',     // Autumn olive (invasive!)
-    49277: 'Ligustrum',     // Privets (invasive!)
-    51429: 'Zanthoxylum',   // Prickly ash
-    57941: 'Hamamelis',     // Witch hazel
-    68524: 'Toxicodendron', // Poison ivy/sumac (shrub forms)
-};
+// ── Driftless Area shrub genera (by scientific name) ──
+export const DRIFTLESS_SHRUB_GENERA = [
+    'Cornus',        // Dogwoods (shrub species)
+    'Viburnum',      // Viburnums
+    'Rubus',         // Raspberries/blackberries
+    'Ribes',         // Gooseberries/currants
+    'Rhus',          // Sumacs
+    'Rosa',          // Roses
+    'Lonicera',      // Honeysuckles (many invasive!)
+    'Sambucus',      // Elderberries
+    'Rhamnus',       // Buckthorns (invasive!)
+    'Frangula',      // Glossy Buckthorn
+    'Euonymus',      // Burning bush (invasive!)
+    'Berberis',      // Barberry (invasive!)
+    'Elaeagnus',     // Autumn olive (invasive!)
+    'Zanthoxylum',   // Prickly ash
+    'Hamamelis',     // Witch hazel
+    'Toxicodendron', // Poison ivy/sumac
+    'Salix',         // Willows
+    'Corylus',       // Hazelnuts
+    'Amelanchier',   // Serviceberries
+    'Symphoricarpos', // Snowberries
+];
 
-// ── Wisconsin NR40 Invasive Plant Species (scientific names → iNat taxon link base) ──
-// Partial list of key species you'll encounter during TSI work in the Driftless
+// ── Wisconsin NR40 Invasive Plant Species ──
+// Sourced from official NR40 plant list: dnr.wisconsin.gov/sites/default/files/topic/Invasives/NR40plantlist.pdf
+// Focused on terrestrial species relevant to Driftless Area forestry / TSI work.
+// Status key: Prohibited = cannot possess/transport/introduce statewide
+//             Restricted = cannot transport/transfer/introduce but existing populations may remain
+//             Prohibited* = Prohibited in most counties, Restricted in listed counties (see NR 40.04/40.05)
+// dnrFact: slug for WIDNR fact sheet at dnr.wi.gov/topic/Invasives/fact/{slug}.html (null = no known sheet)
 export const WI_NR40_INVASIVES = {
-    // Prohibited species (cannot possess/transport/introduce)
-    'Alliaria petiolata': { common: 'Garlic Mustard', status: 'Prohibited', dnrFact: 'GarlicMustard' },
+    // ── Invasive Trees (NR40) ──
+    'Ailanthus altissima': { common: 'Tree of Heaven', status: 'Restricted', dnrFact: 'TreeOfHeaven' },
+    'Robinia pseudoacacia': { common: 'Black Locust', status: 'Restricted', dnrFact: 'BlackLocust' },
+    'Ulmus pumila': { common: 'Siberian Elm', status: 'Restricted', dnrFact: 'SiberianElm' },
+    'Morus alba': { common: 'White Mulberry', status: 'Restricted', dnrFact: 'WhiteMulberry' },
+    'Populus alba': { common: 'White Poplar', status: 'Restricted', dnrFact: 'WhitePoplar' },
+    'Alnus glutinosa': { common: 'Black Alder', status: 'Restricted', dnrFact: null },
+    'Paulownia tomentosa': { common: 'Princesstree', status: 'Prohibited', dnrFact: null },
+    'Phellodendron amurense': { common: 'Amur Cork Tree', status: 'Prohibited', dnrFact: null },
+
+    // ── Invasive Shrubs (NR40) ──
+    'Acer tataricum': { common: 'Amur Maple', status: 'Restricted', dnrFact: null },
     'Berberis thunbergii': { common: 'Japanese Barberry', status: 'Restricted', dnrFact: 'JapaneseBarberry' },
-    'Celastrus orbiculatus': { common: 'Oriental Bittersweet', status: 'Prohibited', dnrFact: 'OrientalBittersweet' },
-    'Cirsium arvense': { common: 'Canada Thistle', status: 'Restricted', dnrFact: 'CanadaThistle' },
-    'Dipsacus laciniatus': { common: 'Cut-leaved Teasel', status: 'Prohibited', dnrFact: 'CutleavedTeasel' },
-    'Dipsacus fullonum': { common: 'Common Teasel', status: 'Restricted', dnrFact: 'CommonTeasel' },
+    'Berberis vulgaris': { common: 'Common Barberry', status: 'Prohibited', dnrFact: null },
+    'Caragana arborescens': { common: 'Siberian Peashrub', status: 'Restricted', dnrFact: null },
     'Elaeagnus umbellata': { common: 'Autumn Olive', status: 'Restricted', dnrFact: 'AutumnOlive' },
+    'Elaeagnus angustifolia': { common: 'Russian Olive', status: 'Restricted', dnrFact: 'RussianOlive' },
     'Euonymus alatus': { common: 'Burning Bush', status: 'Restricted', dnrFact: 'BurningBush' },
     'Frangula alnus': { common: 'Glossy Buckthorn', status: 'Restricted', dnrFact: 'GlossyBuckthorn' },
-    'Hesperis matronalis': { common: "Dame's Rocket", status: 'Restricted', dnrFact: 'DamesRocket' },
-    'Lonicera maackii': { common: 'Amur Honeysuckle', status: 'Prohibited', dnrFact: 'AmurHoneysuckle' },
-    'Lonicera morrowii': { common: "Morrow's Honeysuckle", status: 'Prohibited', dnrFact: 'MorrowHoneysuckle' },
+    'Rhamnus cathartica': { common: 'Common Buckthorn', status: 'Restricted', dnrFact: 'CommonBuckthorn' },
+    'Rosa multiflora': { common: 'Multiflora Rose', status: 'Restricted', dnrFact: 'MultifloraRose' },
+    'Robinia hispida': { common: 'Bristly Locust', status: 'Restricted', dnrFact: null },
+
+    // ── Invasive Honeysuckles (NR40) ──
+    'Lonicera maackii': { common: 'Amur Honeysuckle', status: 'Prohibited*', dnrFact: 'AmurHoneysuckle' },
+    'Lonicera morrowii': { common: "Morrow's Honeysuckle", status: 'Restricted', dnrFact: 'MorrowHoneysuckle' },
     'Lonicera tatarica': { common: 'Tatarian Honeysuckle', status: 'Restricted', dnrFact: 'TatarianHoneysuckle' },
+    'Lonicera x bella': { common: "Bell's Honeysuckle", status: 'Restricted', dnrFact: null },
+    'Lonicera japonica': { common: 'Japanese Honeysuckle', status: 'Prohibited', dnrFact: null },
+
+    // ── Invasive Vines (NR40) ──
+    'Celastrus orbiculatus': { common: 'Oriental Bittersweet', status: 'Restricted', dnrFact: 'OrientalBittersweet' },
+
+    // ── Invasive Forbs / Herbaceous (NR40) ──
+    'Alliaria petiolata': { common: 'Garlic Mustard', status: 'Restricted', dnrFact: 'GarlicMustard' },
+    'Cirsium arvense': { common: 'Canada Thistle', status: 'Restricted', dnrFact: 'CanadaThistle' },
+    'Conium maculatum': { common: 'Poison Hemlock', status: 'Prohibited*', dnrFact: null },
+    'Coronilla varia': { common: 'Crown Vetch', status: 'Restricted', dnrFact: 'CrownVetch' },
+    'Dipsacus laciniatus': { common: 'Cut-leaved Teasel', status: 'Restricted', dnrFact: 'CutleavedTeasel' },
+    'Dipsacus fullonum': { common: 'Common Teasel', status: 'Restricted', dnrFact: 'CommonTeasel' },
+    'Euphorbia esula': { common: 'Leafy Spurge', status: 'Restricted', dnrFact: 'LeafySpurge' },
+    'Fallopia japonica': { common: 'Japanese Knotweed', status: 'Restricted', dnrFact: null },
+    'Heracleum mantegazzianum': { common: 'Giant Hogweed', status: 'Prohibited', dnrFact: null },
+    'Hesperis matronalis': { common: "Dame's Rocket", status: 'Restricted', dnrFact: 'DamesRocket' },
     'Lythrum salicaria': { common: 'Purple Loosestrife', status: 'Restricted', dnrFact: 'PurpleLoosestrife' },
     'Pastinaca sativa': { common: 'Wild Parsnip', status: 'Restricted', dnrFact: 'WildParsnip' },
-    'Phalaris arundinacea': { common: 'Reed Canary Grass', status: 'Restricted', dnrFact: 'ReedCanaryGrass' },
-    'Phragmites australis': { common: 'Common Reed', status: 'Restricted', dnrFact: 'Phragmites' },
-    'Rhamnus cathartica': { common: 'Common Buckthorn', status: 'Restricted', dnrFact: 'CommonBuckthorn' },
-    'Robinia pseudoacacia': { common: 'Black Locust', status: 'Restricted', dnrFact: 'BlackLocust' },
-    'Rosa multiflora': { common: 'Multiflora Rose', status: 'Restricted', dnrFact: 'MultifloraRose' },
-    'Torilis japonica': { common: 'Japanese Hedgeparsley', status: 'Prohibited', dnrFact: 'JapaneseHedgeparsley' },
-    'Ailanthus altissima': { common: 'Tree of Heaven', status: 'Prohibited', dnrFact: 'TreeOfHeaven' },
-    'Acer platanoides': { common: 'Norway Maple', status: 'Restricted', dnrFact: 'NorwayMaple' },
-    'Ulmus pumila': { common: 'Siberian Elm', status: 'Restricted', dnrFact: 'SiberianElm' },
+    'Ranunculus ficaria': { common: 'Lesser Celandine', status: 'Prohibited', dnrFact: null },
     'Centaurea stoebe': { common: 'Spotted Knapweed', status: 'Restricted', dnrFact: 'SpottedKnapweed' },
-    'Arctium minus': { common: 'Common Burdock', status: 'Restricted', dnrFact: 'CommonBurdock' },
+    'Tanacetum vulgare': { common: 'Tansy', status: 'Restricted', dnrFact: 'Tansy' },
+    'Aegopodium podagraria': { common: "Bishop's Goutweed", status: 'Restricted', dnrFact: null },
+    'Iris pseudacorus': { common: 'Yellow Iris', status: 'Restricted', dnrFact: null },
+
+    // ── Prohibited/Restricted (varies by county — Prohibited* in most of WI) ──
+    'Torilis japonica': { common: 'Japanese Hedgeparsley', status: 'Prohibited*', dnrFact: 'JapaneseHedgeparsley' },
+    'Phragmites australis': { common: 'Common Reed', status: 'Prohibited*', dnrFact: 'Phragmites' },
+    'Cirsium palustre': { common: 'European Marsh Thistle', status: 'Prohibited*', dnrFact: null },
+    'Anthriscus sylvestris': { common: 'Wild Chervil', status: 'Prohibited*', dnrFact: null },
 };
 
 // WIDNR invasive fact sheet base URL
@@ -240,7 +277,7 @@ export const PRESET_DECKS = [
         description: 'Trees of the Driftless — oaks, hickories, maples, pines & more',
         // Uses multi-genus queries for actual tree species
         source: 'tree_genera',
-        query: { place_id: 155136, quality_grade: 'research', rank: 'species', per_page: 50, photos: true }
+        query: { place_id: 155136, iconic_taxa: 'Plantae', quality_grade: 'research', rank: 'species', per_page: 100, photos: true }
     },
     {
         id: 'driftless_shrubs',
@@ -248,7 +285,7 @@ export const PRESET_DECKS = [
         icon: '🌳',
         description: 'Shrubs & woody plants — buckthorn, honeysuckle, viburnums & more',
         source: 'shrub_genera',
-        query: { place_id: 155136, quality_grade: 'research', rank: 'species', per_page: 50, photos: true }
+        query: { place_id: 155136, iconic_taxa: 'Plantae', quality_grade: 'research', rank: 'species', per_page: 100, photos: true }
     },
     {
         id: 'driftless_animals',

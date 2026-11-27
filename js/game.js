@@ -241,7 +241,10 @@ export class NatureGame {
             const cache = Store.getSpeciesCache(deck.id);
             const cacheAge = cache ? Date.now() - cache.ts : Infinity;
 
-            if (cache && cacheAge < API_CONFIG.CACHE_TTL) {
+            // Cache version 2: invalidates old caches that may contain wrong species
+            // (prior version had hardcoded wrong genus IDs returning insects/arachnids)
+            const CACHE_VERSION = 3;
+            if (cache && cacheAge < API_CONFIG.CACHE_TTL && cache.version === CACHE_VERSION) {
                 species = cache.species;
             } else {
                 // ── Fetch species based on deck source type ──
@@ -300,7 +303,7 @@ export class NatureGame {
                             nr40: r.taxon._nr40 || null, // NR40 metadata if available
                         };
                     });
-                Store.saveSpeciesCache(deck.id, species);
+                Store.saveSpeciesCache(deck.id, species, CACHE_VERSION);
             }
 
             if (species.length < 4) {
@@ -349,11 +352,20 @@ export class NatureGame {
     }
 
     async _fetchVariedPhotos(cards, placeId) {
-        for (let i = 0; i < Math.min(cards.length, 5); i++) {
+        // Track which photo URLs we've used this session to avoid repeats
+        const usedPhotos = new Set(cards.map(c => c.photoUrl).filter(Boolean));
+
+        for (let i = 0; i < cards.length; i++) {
             try {
-                const photos = await INaturalistAPI.getObservationPhotos(cards[i].id, placeId, 4);
+                const photos = await INaturalistAPI.getObservationPhotos(cards[i].id, placeId, 12);
                 if (photos.length > 0) {
-                    cards[i].photoUrl = photos[Math.floor(Math.random() * photos.length)];
+                    // Pick a photo we haven't used yet, or fall back to any
+                    const unused = photos.filter(p => !usedPhotos.has(p));
+                    const pick = unused.length > 0
+                        ? unused[Math.floor(Math.random() * unused.length)]
+                        : photos[Math.floor(Math.random() * photos.length)];
+                    cards[i].photoUrl = pick;
+                    usedPhotos.add(pick);
                     if (this.state.view === 'session' && this.state.cardIndex === i &&
                         !this.state.answered && !this.state.revealed) {
                         this.render();

@@ -282,8 +282,8 @@ export class UIRenderer {
         if (nr40) {
             nr40Html = `
                 <div class="info-nr40">
-                    <span class="info-tag nr40-status nr40-${nr40.status.toLowerCase()}">
-                        🚫 WI NR40: ${nr40.status}
+                    <span class="info-tag nr40-status nr40-${nr40.status.toLowerCase().replace('*', '')}">
+                        🚫 WI NR40: ${nr40.status === 'Prohibited*' ? 'Prohibited/Restricted' : nr40.status}
                     </span>
                     ${nr40.dnrFact ? `
                         <a class="info-link compact" href="${WIDNR_FACT_URL}${nr40.dnrFact}.html" target="_blank" rel="noopener">
@@ -339,6 +339,8 @@ export class UIRenderer {
                 ${nr40Html}
                 ${linksHtml}
                 <div id="taxon-links-extra"></div>
+            </div>
+            <div class="next-btn-wrap">
                 <button class="next-btn" data-action="nextCard">
                     ${state.cardIndex + 1 < state.sessionCards.length ? 'Next →' : 'Finish Session'}
                 </button>
