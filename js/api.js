@@ -228,23 +228,95 @@ export class INaturalistAPI {
 
     // ── Multi-genus queries (trees, shrubs) ──
 
+    /** Cache resolved genus name → iNaturalist taxon ID */
+    static _genusIdCache = {};
+
     /**
-     * Fetch species counts across multiple genera using Promise.all
-     * iNaturalist API v1 doesn't support comma-separated taxon_ids for species_counts,
-     * so we make one call per genus and merge/deduplicate results.
-     * @param {Object} generaMap - Map of taxonId -> genusName (e.g. DRIFTLESS_TREE_GENERA)
+     * Resolve a genus scientific name to its iNaturalist taxon ID
+     * via taxa/autocomplete. Results cached in memory for the session.
+     */
+    /**
+     * Run async tasks in batches with a delay between batches to avoid rate limits.
+     * @param {Array} items - Items to process
+     * @param {Function} fn - Async function to call per item
+     * @param {number} batchSize - How many to run concurrently (default 4)
+     * @param {number} delayMs - Milliseconds to wait between batches (default 300)
+     * @returns {Promise<Array>} Results in original order
+     */
+    static async _batchedRequests(items, fn, batchSize = 4, delayMs = 300) {
+        const results = [];
+        for (let i = 0; i < items.length; i += batchSize) {
+            const batch = items.slice(i, i + batchSize);
+            const batchResults = await Promise.all(batch.map(fn));
+            results.push(...batchResults);
+            // Delay between batches (skip after last batch)
+            if (i + batchSize < items.length) {
+                await new Promise(r => setTimeout(r, delayMs));
+            }
+        }
+        return results;
+    }
+
+    static async resolveGenusId(genusName) {
+        if (this._genusIdCache[genusName]) return this._genusIdCache[genusName];
+        try {
+            const url = new URL(`${API_CONFIG.BASE_URL}/taxa/autocomplete`);
+            url.searchParams.set('q', genusName);
+            url.searchParams.set('rank', 'genus');
+            url.searchParams.set('per_page', '5');
+            const res = await fetch(url);
+            if (!res.ok) {
+                console.warn(`Genus resolve HTTP ${res.status} for "${genusName}"`);
+                return null;
+            }
+            const data = await res.json();
+            const match = (data.results || []).find(t =>
+                t.name.toLowerCase() === genusName.toLowerCase() && t.rank === 'genus'
+            );
+            if (match) {
+                this._genusIdCache[genusName] = match.id;
+                return match.id;
+            }
+        } catch (err) {
+            console.warn(`Failed to resolve genus "${genusName}":`, err);
+        }
+        return null;
+    }
+
+    /**
+     * Fetch species counts across multiple genera.
+     * Accepts an array of genus NAME STRINGS, resolves each to a taxon ID
+     * at runtime via taxa/autocomplete (no hardcoded IDs), then queries
+     * species_counts per genus and merges/deduplicates.
+     * Requests are batched (4 at a time, 300ms delay) to avoid iNaturalist rate limits.
+     * @param {string[]} generaNames - Array of genus scientific names
      * @param {Object} baseParams - Base query params (place_id, quality_grade, etc.)
      * @returns {Promise<Array>} Deduplicated species results
      */
-    static async multiGenusSpeciesCounts(generaMap, baseParams) {
-        const genusIds = Object.keys(generaMap).map(Number);
-        // Fire all genus queries in parallel
-        const promises = genusIds.map(gid =>
-            this.speciesCounts({ ...baseParams, taxon_id: gid })
-                .catch(err => { console.warn(`Genus ${gid} failed:`, err); return []; })
+    static async multiGenusSpeciesCounts(generaNames, baseParams) {
+        // Step 1: Resolve genus names → taxon IDs in batches of 4
+        const idResults = await this._batchedRequests(
+            generaNames,
+            name => this.resolveGenusId(name),
+            4, 300
         );
-        const allResults = await Promise.all(promises);
-        // Merge and deduplicate by taxon.id
+        const validIds = idResults.filter(id => id !== null);
+
+        if (validIds.length === 0) {
+            console.warn('No genus IDs resolved — falling back to broad Plantae query');
+            return this.speciesCounts(baseParams);
+        }
+        console.log(`Resolved ${validIds.length}/${generaNames.length} genera to IDs`);
+
+        // Step 2: Query species_counts per genus in batches of 3
+        const allResults = await this._batchedRequests(
+            validIds,
+            gid => this.speciesCounts({ ...baseParams, taxon_id: gid })
+                .catch(err => { console.warn(`Genus ${gid} query failed:`, err); return []; }),
+            3, 400
+        );
+
+        // Step 3: Merge and deduplicate by taxon.id
         const seen = new Map();
         for (const results of allResults) {
             for (const r of results) {
@@ -313,15 +385,16 @@ export class INaturalistAPI {
      */
     static async fetchNR40Species(baseParams) {
         const names = Object.keys(WI_NR40_INVASIVES);
-        // Search for each NR40 species by scientific name
-        const promises = names.map(name =>
-            this.speciesCounts({
+        // Search for each NR40 species by scientific name, batched to avoid rate limits
+        const allResults = await this._batchedRequests(
+            names,
+            name => this.speciesCounts({
                 ...baseParams,
                 taxon_name: name,
                 introduced: true
-            }).catch(() => [])
+            }).catch(() => []),
+            4, 300
         );
-        const allResults = await Promise.all(promises);
         const seen = new Map();
         for (let i = 0; i < allResults.length; i++) {
             for (const r of allResults[i]) {
